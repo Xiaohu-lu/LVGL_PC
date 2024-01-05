@@ -36,6 +36,26 @@ static void lv_block_game_move_style_2_block_left(Block_t *block);
 static void lv_block_game_move_style_2_block_right(Block_t *block);
 static int lv_block_game_move_style_2_block_down(Block_t *block);
 
+static void lv_block_game_move_style_3_block_left(Block_t *block);
+static void lv_block_game_move_style_3_block_right(Block_t *block);
+static int lv_block_game_move_style_3_block_down(Block_t *block);
+
+static void lv_block_game_move_style_4_block_left(Block_t *block);
+static void lv_block_game_move_style_4_block_right(Block_t *block);
+static int lv_block_game_move_style_4_block_down(Block_t *block);
+
+static void lv_block_game_move_style_5_block_left(Block_t *block);
+static void lv_block_game_move_style_5_block_right(Block_t *block);
+static int lv_block_game_move_style_5_block_down(Block_t *block);
+
+static void lv_block_game_move_style_6_block_left(Block_t *block);
+static void lv_block_game_move_style_6_block_right(Block_t *block);
+static int lv_block_game_move_style_6_block_down(Block_t *block);
+
+static void lv_block_game_move_style_7_block_left(Block_t *block);
+static void lv_block_game_move_style_7_block_right(Block_t *block);
+static int lv_block_game_move_style_7_block_down(Block_t *block);
+
 static void lv_block_game_move_block_left(Block_t *block);
 static void lv_block_game_move_block_right(Block_t *block);
 
@@ -70,6 +90,10 @@ static void lv_block_game_switch_style_5_state(Block_t *block);
 static void lv_block_game_set_style_6_state(Block_t *block);
 static void lv_block_game_create_style_6_block(Block_t *block, uint32_t color);
 static void lv_block_game_switch_style_6_state(Block_t *block);
+
+static void lv_block_game_set_style_7_state(Block_t *block);
+static void lv_block_game_create_style_7_block(Block_t *block, uint32_t color);
+static void lv_block_game_switch_style_7_state(Block_t *block);
 
 static void event_handler_back_to_home(lv_event_t *e);
 static void event_handler_left_move(lv_event_t *e);
@@ -323,6 +347,21 @@ static void lv_block_game_new_block(Block_t *block, uint8_t block_type, uint32_t
     case STYLE_2:
         lv_block_game_create_style_2_block(block, color);
         break;
+    case STYLE_3:
+        lv_block_game_create_style_3_block(block, color);
+        break;
+    case STYLE_4:
+        lv_block_game_create_style_4_block(block, color);
+        break;
+    case STYLE_5:
+        lv_block_game_create_style_5_block(block, color);
+        break;
+    case STYLE_6:
+        lv_block_game_create_style_6_block(block, color);
+        break;
+    case STYLE_7:
+        lv_block_game_create_style_7_block(block, color);
+        break;
     }
 }
 
@@ -332,7 +371,7 @@ static void lv_block_game_new_the_block(void)
     /*设置随机数种子*/
     srand((unsigned)time(NULL));
     int color_type = rand() % BLOCK_RANGE;
-    int style_type = rand() % 2;
+    int style_type = rand() % STYLE_LAST;
     uint32_t color = RED_COLOR_HEX;
     switch(color_type)
     {
@@ -422,6 +461,21 @@ static void lv_block_game_switch_block_state(Block_t *block)
     case STYLE_2:
         lv_block_game_switch_style_2_state(block);
         break;
+    case STYLE_3:
+        lv_block_game_switch_style_3_state(block);
+        break;
+    case STYLE_4:
+        lv_block_game_switch_style_4_state(block);
+        break;
+    case STYLE_5:
+        lv_block_game_switch_style_5_state(block);
+        break;
+    case STYLE_6:
+        lv_block_game_switch_style_6_state(block);
+        break;
+    case STYLE_7:
+        lv_block_game_switch_style_7_state(block);
+        break;
     }
 
     lv_block_game_update_current_block();
@@ -468,7 +522,7 @@ static void lv_block_game_move_style_1_block_left(Block_t *block)
         /*2块在1块的下边*/
         /*3块在1块的左边*/
         /*4块在块的上边*/
-        /*需要判断3块左边是否可以移动和2块左边是否可以移动*/
+        /*需要判断3块左边是否可以移动和2块左边是否可以移动,4块的左边*/
         /*先判断3块*/
         x_index = block->x[2];
         y_index = block->y[2];
@@ -487,12 +541,19 @@ static void lv_block_game_move_style_1_block_left(Block_t *block)
         {
             return;
         }
+        /*再判断4块*/
+        x_index = block->x[3];
+        y_index = block->y[3];
+        if(g_pt_lv_blockgame->block[x_index - 1][y_index].is_fill == IS_FILL)/*已经被填充不能左移了*/
+        {
+            return;
+        }
         break;
     case STATE_3:
         /*2块在1块的左边*/
         /*3块在1块的上边*/
         /*4块在块的右边*/
-        /*需要判断2块左边是否可以移动*/
+        /*需要判断2块左边是否可以移动,3块左边是否可以移动*/
 
         /*再判断2块*/
         x_index = block->x[1];
@@ -506,12 +567,20 @@ static void lv_block_game_move_style_1_block_left(Block_t *block)
             return;
         }
 
+        /*再判断3块*/
+        x_index = block->x[2];
+        y_index = block->y[2];
+        if(g_pt_lv_blockgame->block[x_index - 1][y_index].is_fill == IS_FILL)/*已经被填充不能左移了*/
+        {
+            return;
+        }
+
         break;
     case STATE_4:
         /*2块在1块的上边*/
         /*3块在1块的右边*/
         /*4块在块的下边*/
-        /*需要判断4块左边是否可以移动*/
+        /*需要判断4块左边是否可以移动,1,2块左边*/
         /*再判断4块*/
         x_index = block->x[3];
         y_index = block->y[3];
@@ -519,6 +588,20 @@ static void lv_block_game_move_style_1_block_left(Block_t *block)
         {
             return;
         }
+        if(g_pt_lv_blockgame->block[x_index - 1][y_index].is_fill == IS_FILL)/*已经被填充不能左移了*/
+        {
+            return;
+        }
+        /*再判断1块*/
+        x_index = block->x[0];
+        y_index = block->y[0];
+        if(g_pt_lv_blockgame->block[x_index - 1][y_index].is_fill == IS_FILL)/*已经被填充不能左移了*/
+        {
+            return;
+        }
+        /*再判断2块*/
+        x_index = block->x[1];
+        y_index = block->y[1];
         if(g_pt_lv_blockgame->block[x_index - 1][y_index].is_fill == IS_FILL)/*已经被填充不能左移了*/
         {
             return;
@@ -576,7 +659,7 @@ static void lv_block_game_move_style_1_block_right(Block_t *block)
         /*2块在1块的下边*/
         /*3块在1块的左边*/
         /*4块在块的上边*/
-        /*需要判断2块右边是否可以移动*/
+        /*需要判断2块右边是否可以移动,1,4块右边*/
         /*先判断2块*/
         x_index = block->x[1];
         y_index = block->y[1];
@@ -584,6 +667,20 @@ static void lv_block_game_move_style_1_block_right(Block_t *block)
         {
             return;
         }
+        if(g_pt_lv_blockgame->block[x_index + 1][y_index].is_fill == IS_FILL)/*已经被填充不能右移了*/
+        {
+            return;
+        }
+        /*先判断1块*/
+        x_index = block->x[0];
+        y_index = block->y[0];
+        if(g_pt_lv_blockgame->block[x_index + 1][y_index].is_fill == IS_FILL)/*已经被填充不能右移了*/
+        {
+            return;
+        }
+        /*先判断4块*/
+        x_index = block->x[3];
+        y_index = block->y[3];
         if(g_pt_lv_blockgame->block[x_index + 1][y_index].is_fill == IS_FILL)/*已经被填充不能右移了*/
         {
             return;
@@ -620,7 +717,7 @@ static void lv_block_game_move_style_1_block_right(Block_t *block)
         /*2块在1块的上边*/
         /*3块在1块的右边*/
         /*4块在块的下边*/
-        /*需要判断3块右边是否可以移动和4块右边是否可以移动*/
+        /*需要判断3块右边是否可以移动和4块右边是否可以移动,2块右边*/
         /*再判断3块*/
         x_index = block->x[2];
         y_index = block->y[2];
@@ -635,6 +732,13 @@ static void lv_block_game_move_style_1_block_right(Block_t *block)
         /*再判断4块*/
         x_index = block->x[3];
         y_index = block->y[3];
+        if(g_pt_lv_blockgame->block[x_index + 1][y_index].is_fill == IS_FILL)/*已经被填充不能右移了*/
+        {
+            return;
+        }
+        /*再判断2块*/
+        x_index = block->x[1];
+        y_index = block->y[1];
         if(g_pt_lv_blockgame->block[x_index + 1][y_index].is_fill == IS_FILL)/*已经被填充不能右移了*/
         {
             return;
@@ -1334,7 +1438,6 @@ static void lv_block_game_move_style_3_block_left(Block_t *block)
 }
 
 
-
 /* lv_block_game_move_style_3_block_right
  * 第三种类型的块向右移动
  */
@@ -1612,6 +1715,1392 @@ static int lv_block_game_move_style_3_block_down(Block_t *block)
 
 }
 
+/* lv_block_game_move_style_4_block_left
+ * 第四种类型的块向左移动
+ */
+static void lv_block_game_move_style_4_block_left(Block_t *block)
+{
+    uint8_t state;
+    uint8_t x_index;
+    uint8_t y_index;
+    uint8_t i;
+    state = block->state;
+    switch(state)
+    {
+    case STATE_1:
+        /*2块在1块的右边*/
+        /*3块在4块的左边*/
+        /*4块在块1的上边*/
+        /*需要判断3块左边是否有空间,1块左边是否有空间*/
+        /*先判断3块*/
+        x_index = block->x[2];
+        y_index = block->y[2];
+        if(x_index == 0)/*不能移动*/
+        {
+            return;
+        }
+        if(g_pt_lv_blockgame->block[x_index - 1][y_index].is_fill == IS_FILL)/*已经被填充不能左移了*/
+        {
+            return;
+        }
+        /*再判断1块*/
+        x_index = block->x[0];
+        y_index = block->y[0];
+        if(g_pt_lv_blockgame->block[x_index - 1][y_index].is_fill == IS_FILL)/*已经被填充不能左移了*/
+        {
+            return;
+        }
+        break;
+    case STATE_2:
+        /*2块在1块的下边*/
+        /*3块在4块的上边*/
+        /*4块在块1的右边*/
+        /*需要判断1块左边,3块左边是否有空间,2块左边是否有空间*/
+        /*先判断2块*/
+        x_index = block->x[1];
+        y_index = block->y[1];
+        if(x_index == 0)/*不能移动*/
+        {
+            return;
+        }
+        if(g_pt_lv_blockgame->block[x_index - 1][y_index].is_fill == IS_FILL)/*已经被填充不能左移了*/
+        {
+            return;
+        }
+        /*再判断1块*/
+        x_index = block->x[0];
+        y_index = block->y[0];
+        if(g_pt_lv_blockgame->block[x_index - 1][y_index].is_fill == IS_FILL)/*已经被填充不能左移了*/
+        {
+            return;
+        }
+        /*再判断3块*/
+        x_index = block->x[2];
+        y_index = block->y[2];
+        if(g_pt_lv_blockgame->block[x_index - 1][y_index].is_fill == IS_FILL)/*已经被填充不能左移了*/
+        {
+            return;
+        }
+        break;
+    case STATE_3:
+        /*2块在1块的左边*/
+        /*3块在4块的右边*/
+        /*4块在块1的下边*/
+        /*需要判断2块左边是否可以移动,4块左边是否可以移动*/
+
+        /*再判断2块*/
+        x_index = block->x[1];
+        y_index = block->y[1];
+        if(x_index == 0)/*不能移动*/
+        {
+            return;
+        }
+        if(g_pt_lv_blockgame->block[x_index - 1][y_index].is_fill == IS_FILL)/*已经被填充不能左移了*/
+        {
+            return;
+        }
+        /*再判断4块*/
+        x_index = block->x[3];
+        y_index = block->y[3];
+        if(g_pt_lv_blockgame->block[x_index - 1][y_index].is_fill == IS_FILL)/*已经被填充不能左移了*/
+        {
+            return;
+        }
+        break;
+    case STATE_4:
+        /*2块在1块的上边*/
+        /*3块在4块的下边*/
+        /*4块在块1的左边*/
+        /*需要判断4块左边是否有空间,3块左边是否有空间,2块左边*/
+        /*再判断4块*/
+        x_index = block->x[3];
+        y_index = block->y[3];
+        if(x_index == 0)/*不能移动*/
+        {
+            return;
+        }
+        if(g_pt_lv_blockgame->block[x_index - 1][y_index].is_fill == IS_FILL)/*已经被填充不能左移了*/
+        {
+            return;
+        }
+        /*再判断3块*/
+        x_index = block->x[2];
+        y_index = block->y[2];
+        if(g_pt_lv_blockgame->block[x_index - 1][y_index].is_fill == IS_FILL)/*已经被填充不能左移了*/
+        {
+            return;
+        }
+        /*再判断2块*/
+        x_index = block->x[1];
+        y_index = block->y[1];
+        if(g_pt_lv_blockgame->block[x_index - 1][y_index].is_fill == IS_FILL)/*已经被填充不能左移了*/
+        {
+            return;
+        }
+        break;
+    }
+
+    /*可以向左移动*/
+    for(i = 0; i < 4; i++)
+    {
+        block->x[i] -= 1;
+    }
+
+}
+
+
+/* lv_block_game_move_style_4_block_right
+ * 第四种类型的块向右移动
+ */
+static void lv_block_game_move_style_4_block_right(Block_t *block)
+{
+    uint8_t max_x;
+    uint8_t state;
+    uint8_t x_index;
+    uint8_t y_index;
+    uint8_t i;
+    max_x = LV_BLOCK_GAME_VALID_CONT_W/LV_BLOCK_GAME_BASE_CONT_SIZE - 1;
+    state = block->state;
+    switch(state)
+    {
+    case STATE_1:
+        /*2块在1块的右边*/
+        /*3块在4块的左边*/
+        /*4块在块1的上边*/
+        /*需要判2块右边是否有空间,4块右边是否有空间*/
+        /*先判断2块*/
+        x_index = block->x[1];
+        y_index = block->y[1];
+        if(x_index == max_x)/*不能移动*/
+        {
+            return;
+        }
+        if(g_pt_lv_blockgame->block[x_index + 1][y_index].is_fill == IS_FILL)/*已经被填充不能右移了*/
+        {
+            return;
+        }
+        /*再判断4块*/
+        x_index = block->x[3];
+        y_index = block->y[3];
+        if(g_pt_lv_blockgame->block[x_index + 1][y_index].is_fill == IS_FILL)/*已经被填充不能右移了*/
+        {
+            return;
+        }
+        break;
+    case STATE_2:
+        /*2块在1块的下边*/
+        /*3块在4块的上边*/
+        /*4块在块1的右边*/
+        /*需要判断4块右边是否有空间,3块右边是否有空间,2块右边*/
+        /*先判断4块*/
+        x_index = block->x[3];
+        y_index = block->y[3];
+        if(x_index == max_x)/*不能移动*/
+        {
+            return;
+        }
+        if(g_pt_lv_blockgame->block[x_index + 1][y_index].is_fill == IS_FILL)/*已经被填充不能右移了*/
+        {
+            return;
+        }
+        /*再判断3块*/
+        x_index = block->x[2];
+        y_index = block->y[2];
+        if(g_pt_lv_blockgame->block[x_index + 1][y_index].is_fill == IS_FILL)/*已经被填充不能右移了*/
+        {
+            return;
+        }
+        /*再判断2块*/
+        x_index = block->x[1];
+        y_index = block->y[1];
+        if(g_pt_lv_blockgame->block[x_index + 1][y_index].is_fill == IS_FILL)/*已经被填充不能右移了*/
+        {
+            return;
+        }
+        break;
+    case STATE_3:
+        /*2块在1块的左边*/
+        /*3块在4块的右边*/
+        /*4块在块1的下边*/
+        /*需要判断3块右边是否可以移动,1块右边是否可以移动*/
+
+        /*再判断3块*/
+        x_index = block->x[2];
+        y_index = block->y[2];
+        if(x_index == max_x)/*不能移动*/
+        {
+            return;
+        }
+        if(g_pt_lv_blockgame->block[x_index + 1][y_index].is_fill == IS_FILL)/*已经被填充不能左移了*/
+        {
+            return;
+        }
+        /*再判断1块*/
+        x_index = block->x[0];
+        y_index = block->y[0];
+        if(g_pt_lv_blockgame->block[x_index + 1][y_index].is_fill == IS_FILL)/*已经被填充不能左移了*/
+        {
+            return;
+        }
+        break;
+    case STATE_4:
+        /*2块在1块的上边*/
+        /*3块在4块的下边*/
+        /*4块在块1的左边*/
+        /*需要判断2块右边是否有空间,1块右边,3块右边是否有空间*/
+        /*再判断2块*/
+        x_index = block->x[1];
+        y_index = block->y[1];
+        if(x_index == max_x)/*不能移动*/
+        {
+            return;
+        }
+        if(g_pt_lv_blockgame->block[x_index + 1][y_index].is_fill == IS_FILL)/*已经被填充不能左移了*/
+        {
+            return;
+        }
+        /*再判断1块*/
+        x_index = block->x[0];
+        y_index = block->y[0];
+        if(g_pt_lv_blockgame->block[x_index + 1][y_index].is_fill == IS_FILL)/*已经被填充不能左移了*/
+        {
+            return;
+        }
+        /*再判断3块*/
+        x_index = block->x[2];
+        y_index = block->y[2];
+        if(g_pt_lv_blockgame->block[x_index + 1][y_index].is_fill == IS_FILL)/*已经被填充不能左移了*/
+        {
+            return;
+        }
+        break;
+    }
+
+    /*可以向左移动*/
+    for(i = 0; i < 4; i++)
+    {
+        block->x[i] += 1;
+    }
+
+}
+
+/* lv_block_game_move_style_4_block_down
+ * 第四种类型的块向下移动
+ */
+static int lv_block_game_move_style_4_block_down(Block_t *block)
+{
+    uint8_t max_y;
+    uint8_t state;
+    uint8_t x_index;
+    uint8_t y_index;
+    uint8_t i;
+    max_y = LV_BLOCK_GAME_VALID_CONT_H/LV_BLOCK_GAME_BASE_CONT_SIZE - 1;
+    state = block->state;
+    switch(state)
+    {
+    case STATE_1:
+        /*2块在1块的右边*/
+        /*3块在4块的左边*/
+        /*4块在块1的上边*/
+        /*需要判1块下边是否有空间,2块下边是否有空间,3块下边*/
+        /*先判断1块*/
+        x_index = block->x[0];
+        y_index = block->y[0];
+        if(y_index == max_y)/*不能移动*/
+        {
+            /*y最大表示当前块碰壁了*/
+
+            return RT_NEED_NEW;
+        }
+        if(g_pt_lv_blockgame->block[x_index][y_index + 1].is_fill == IS_FILL)/*已经被填充不能下移了*/
+        {
+            return RT_NEED_NEW;
+        }
+        /*再判断2块*/
+        x_index = block->x[1];
+        y_index = block->y[1];
+        if(g_pt_lv_blockgame->block[x_index][y_index + 1].is_fill == IS_FILL)/*已经被填充不能下移了*/
+        {
+            return RT_NEED_NEW;
+        }
+        /*再判断3块*/
+        x_index = block->x[2];
+        y_index = block->y[2];
+        if(g_pt_lv_blockgame->block[x_index][y_index + 1].is_fill == IS_FILL)/*已经被填充不能下移了*/
+        {
+            return RT_NEED_NEW;
+        }
+        break;
+    case STATE_2:
+        /*2块在1块的下边*/
+        /*3块在4块的上边*/
+        /*4块在块1的右边*/
+        /*需要判2块下边是否有空间,4块下边是否有空间*/
+        /*先判断2块*/
+        x_index = block->x[1];
+        y_index = block->y[1];
+        if(y_index == max_y)/*不能移动*/
+        {
+            /*y最大表示当前块碰壁了*/
+
+            return RT_NEED_NEW;
+        }
+        if(g_pt_lv_blockgame->block[x_index][y_index + 1].is_fill == IS_FILL)/*已经被填充不能下移了*/
+        {
+            return RT_NEED_NEW;
+        }
+        /*再判断4块*/
+        x_index = block->x[3];
+        y_index = block->y[3];
+        if(g_pt_lv_blockgame->block[x_index][y_index + 1].is_fill == IS_FILL)/*已经被填充不能下移了*/
+        {
+            return RT_NEED_NEW;
+        }
+        break;
+    case STATE_3:
+        /*2块在1块的左边*/
+        /*3块在4块的右边*/
+        /*4块在块1的下边*/
+        /*需要判4块下边是否有空间,3块下边是否有空间,2块*/
+        /*先判断4块*/
+        x_index = block->x[3];
+        y_index = block->y[3];
+        if(y_index == max_y)/*不能移动*/
+        {
+            /*y最大表示当前块碰壁了*/
+
+            return RT_NEED_NEW;
+        }
+        if(g_pt_lv_blockgame->block[x_index][y_index + 1].is_fill == IS_FILL)/*已经被填充不能下移了*/
+        {
+            return RT_NEED_NEW;
+        }
+        /*再判断3块*/
+        x_index = block->x[2];
+        y_index = block->y[2];
+        if(g_pt_lv_blockgame->block[x_index][y_index + 1].is_fill == IS_FILL)/*已经被填充不能下移了*/
+        {
+            return RT_NEED_NEW;
+        }
+        /*再判断2块*/
+        x_index = block->x[1];
+        y_index = block->y[1];
+        if(g_pt_lv_blockgame->block[x_index][y_index + 1].is_fill == IS_FILL)/*已经被填充不能下移了*/
+        {
+            return RT_NEED_NEW;
+        }
+        break;
+    case STATE_4:
+        /*2块在1块的上边*/
+        /*3块在4块的下边*/
+        /*4块在块1的左边*/
+        /*需要判3块下边是否有空间,1块下边是否有空间*/
+        /*先判断3块*/
+        x_index = block->x[2];
+        y_index = block->y[2];
+        if(y_index == max_y)/*不能移动*/
+        {
+            /*y最大表示当前块碰壁了*/
+
+            return RT_NEED_NEW;
+        }
+        if(g_pt_lv_blockgame->block[x_index][y_index + 1].is_fill == IS_FILL)/*已经被填充不能下移了*/
+        {
+            return RT_NEED_NEW;
+        }
+        /*再判断1块*/
+        x_index = block->x[0];
+        y_index = block->y[0];
+        if(g_pt_lv_blockgame->block[x_index][y_index + 1].is_fill == IS_FILL)/*已经被填充不能下移了*/
+        {
+            return RT_NEED_NEW;
+        }
+        break;
+    }
+
+    /*可以向下移动*/
+    for(i = 0; i < 4; i++)
+    {
+        block->y[i] += 1;
+    }
+
+}
+
+/* lv_block_game_move_style_5_block_left
+ * 第五种类型的块向左移动
+ */
+static void lv_block_game_move_style_5_block_left(Block_t *block)
+{
+    uint8_t state;
+    uint8_t x_index;
+    uint8_t y_index;
+    uint8_t i;
+    state = block->state;
+    switch(state)
+    {
+    case STATE_1:
+        /*2块在1块的上边*/
+        /*3块在2块的右边*/
+        /*4块在块1的左边*/
+        /*需要判断4块左边是否有空间,2块左边是否有空间*/
+        /*先判断4块*/
+        x_index = block->x[3];
+        y_index = block->y[3];
+        if(x_index == 0)/*不能移动*/
+        {
+            return;
+        }
+        if(g_pt_lv_blockgame->block[x_index - 1][y_index].is_fill == IS_FILL)/*已经被填充不能左移了*/
+        {
+            return;
+        }
+        /*再判断2块*/
+        x_index = block->x[1];
+        y_index = block->y[1];
+        if(g_pt_lv_blockgame->block[x_index - 1][y_index].is_fill == IS_FILL)/*已经被填充不能左移了*/
+        {
+            return;
+        }
+        break;
+    case STATE_2:
+        /*2块在1块的右边*/
+        /*3块在2块的下边*/
+        /*4块在块1的上边*/
+        /*需要判断4块左边,1块左边是否有空间,3块左边是否有空间*/
+        /*先判断4块*/
+        x_index = block->x[3];
+        y_index = block->y[3];
+        if(x_index == 0)/*不能移动*/
+        {
+            return;
+        }
+        if(g_pt_lv_blockgame->block[x_index - 1][y_index].is_fill == IS_FILL)/*已经被填充不能左移了*/
+        {
+            return;
+        }
+        /*再判断1块*/
+        x_index = block->x[0];
+        y_index = block->y[0];
+        if(g_pt_lv_blockgame->block[x_index - 1][y_index].is_fill == IS_FILL)/*已经被填充不能左移了*/
+        {
+            return;
+        }
+        /*再判断3块*/
+        x_index = block->x[2];
+        y_index = block->y[2];
+        if(g_pt_lv_blockgame->block[x_index - 1][y_index].is_fill == IS_FILL)/*已经被填充不能左移了*/
+        {
+            return;
+        }
+        break;
+    case STATE_3:
+        /*2块在1块的下边*/
+        /*3块在2块的左边*/
+        /*4块在块1的右边*/
+        /*需要判断3块左边是否可以移动,1块左边是否可以移动*/
+
+        /*再判断3块*/
+        x_index = block->x[2];
+        y_index = block->y[2];
+        if(x_index == 0)/*不能移动*/
+        {
+            return;
+        }
+        if(g_pt_lv_blockgame->block[x_index - 1][y_index].is_fill == IS_FILL)/*已经被填充不能左移了*/
+        {
+            return;
+        }
+        /*再判断1块*/
+        x_index = block->x[0];
+        y_index = block->y[0];
+        if(g_pt_lv_blockgame->block[x_index - 1][y_index].is_fill == IS_FILL)/*已经被填充不能左移了*/
+        {
+            return;
+        }
+        break;
+    case STATE_4:
+        /*2块在1块的左边*/
+        /*3块在2块的上边*/
+        /*4块在块1的下边*/
+        /*需要判断3块左边是否有空间,2块左边是否有空间,4块左边*/
+        /*再判断3块*/
+        x_index = block->x[2];
+        y_index = block->y[2];
+        if(x_index == 0)/*不能移动*/
+        {
+            return;
+        }
+        if(g_pt_lv_blockgame->block[x_index - 1][y_index].is_fill == IS_FILL)/*已经被填充不能左移了*/
+        {
+            return;
+        }
+        /*再判断2块*/
+        x_index = block->x[1];
+        y_index = block->y[1];
+        if(g_pt_lv_blockgame->block[x_index - 1][y_index].is_fill == IS_FILL)/*已经被填充不能左移了*/
+        {
+            return;
+        }
+        /*再判断4块*/
+        x_index = block->x[3];
+        y_index = block->y[3];
+        if(g_pt_lv_blockgame->block[x_index - 1][y_index].is_fill == IS_FILL)/*已经被填充不能左移了*/
+        {
+            return;
+        }
+        break;
+    }
+
+    /*可以向左移动*/
+    for(i = 0; i < 4; i++)
+    {
+        block->x[i] -= 1;
+    }
+
+}
+
+
+/* lv_block_game_move_style_5_block_right
+ * 第五种类型的块向右移动
+ */
+static void lv_block_game_move_style_5_block_right(Block_t *block)
+{
+    uint8_t max_x;
+    uint8_t state;
+    uint8_t x_index;
+    uint8_t y_index;
+    uint8_t i;
+    max_x = LV_BLOCK_GAME_VALID_CONT_W/LV_BLOCK_GAME_BASE_CONT_SIZE - 1;
+    state = block->state;
+    switch(state)
+    {
+    case STATE_1:
+        /*2块在1块的上边*/
+        /*3块在2块的右边*/
+        /*4块在块1的左边*/
+        /*需要判3块右边是否有空间,1块右边是否有空间*/
+        /*先判断3块*/
+        x_index = block->x[2];
+        y_index = block->y[2];
+        if(x_index == max_x)/*不能移动*/
+        {
+            return;
+        }
+        if(g_pt_lv_blockgame->block[x_index + 1][y_index].is_fill == IS_FILL)/*已经被填充不能右移了*/
+        {
+            return;
+        }
+        /*再判断1块*/
+        x_index = block->x[0];
+        y_index = block->y[0];
+        if(g_pt_lv_blockgame->block[x_index + 1][y_index].is_fill == IS_FILL)/*已经被填充不能右移了*/
+        {
+            return;
+        }
+        break;
+    case STATE_2:
+        /*2块在1块的右边*/
+        /*3块在2块的下边*/
+        /*4块在块1的上边*/
+        /*需要判断3块右边是否有空间,2块右边是否有空间,4块右边*/
+        /*先判断3块*/
+        x_index = block->x[2];
+        y_index = block->y[2];
+        if(x_index == max_x)/*不能移动*/
+        {
+            return;
+        }
+        if(g_pt_lv_blockgame->block[x_index + 1][y_index].is_fill == IS_FILL)/*已经被填充不能右移了*/
+        {
+            return;
+        }
+        /*再判断2块*/
+        x_index = block->x[1];
+        y_index = block->y[1];
+        if(g_pt_lv_blockgame->block[x_index + 1][y_index].is_fill == IS_FILL)/*已经被填充不能右移了*/
+        {
+            return;
+        }
+        /*再判断4块*/
+        x_index = block->x[3];
+        y_index = block->y[3];
+        if(g_pt_lv_blockgame->block[x_index + 1][y_index].is_fill == IS_FILL)/*已经被填充不能右移了*/
+        {
+            return;
+        }
+        break;
+    case STATE_3:
+        /*2块在1块的下边*/
+        /*3块在2块的左边*/
+        /*4块在块1的右边*/
+        /*需要判断4块右边是否可以移动,2块右边是否可以移动*/
+
+        /*再判断4块*/
+        x_index = block->x[3];
+        y_index = block->y[3];
+        if(x_index == max_x)/*不能移动*/
+        {
+            return;
+        }
+        if(g_pt_lv_blockgame->block[x_index + 1][y_index].is_fill == IS_FILL)/*已经被填充不能左移了*/
+        {
+            return;
+        }
+        /*再判断2块*/
+        x_index = block->x[1];
+        y_index = block->y[1];
+        if(g_pt_lv_blockgame->block[x_index + 1][y_index].is_fill == IS_FILL)/*已经被填充不能左移了*/
+        {
+            return;
+        }
+        break;
+    case STATE_4:
+        /*2块在1块的左边*/
+        /*3块在2块的上边*/
+        /*4块在块1的下边*/
+        /*需要判断4块右边是否有空间,1块右边,3块右边是否有空间*/
+        /*再判断4块*/
+        x_index = block->x[3];
+        y_index = block->y[3];
+        if(x_index == max_x)/*不能移动*/
+        {
+            return;
+        }
+        if(g_pt_lv_blockgame->block[x_index + 1][y_index].is_fill == IS_FILL)/*已经被填充不能左移了*/
+        {
+            return;
+        }
+        /*再判断1块*/
+        x_index = block->x[0];
+        y_index = block->y[0];
+        if(g_pt_lv_blockgame->block[x_index + 1][y_index].is_fill == IS_FILL)/*已经被填充不能左移了*/
+        {
+            return;
+        }
+        /*再判断3块*/
+        x_index = block->x[2];
+        y_index = block->y[2];
+        if(g_pt_lv_blockgame->block[x_index + 1][y_index].is_fill == IS_FILL)/*已经被填充不能左移了*/
+        {
+            return;
+        }
+        break;
+    }
+
+    /*可以向左移动*/
+    for(i = 0; i < 4; i++)
+    {
+        block->x[i] += 1;
+    }
+
+}
+
+/* lv_block_game_move_style_5_block_down
+ * 第五种类型的块向下移动
+ */
+static int lv_block_game_move_style_5_block_down(Block_t *block)
+{
+    uint8_t max_y;
+    uint8_t state;
+    uint8_t x_index;
+    uint8_t y_index;
+    uint8_t i;
+    max_y = LV_BLOCK_GAME_VALID_CONT_H/LV_BLOCK_GAME_BASE_CONT_SIZE - 1;
+    state = block->state;
+    switch(state)
+    {
+    case STATE_1:
+        /*2块在1块的上边*/
+        /*3块在2块的右边*/
+        /*4块在块1的左边*/
+        /*需要判4块下边是否有空间,1块下边是否有空间,3块下边*/
+        /*先判断4块*/
+        x_index = block->x[3];
+        y_index = block->y[3];
+        if(y_index == max_y)/*不能移动*/
+        {
+            /*y最大表示当前块碰壁了*/
+
+            return RT_NEED_NEW;
+        }
+        if(g_pt_lv_blockgame->block[x_index][y_index + 1].is_fill == IS_FILL)/*已经被填充不能下移了*/
+        {
+            return RT_NEED_NEW;
+        }
+        /*再判断1块*/
+        x_index = block->x[0];
+        y_index = block->y[0];
+        if(g_pt_lv_blockgame->block[x_index][y_index + 1].is_fill == IS_FILL)/*已经被填充不能下移了*/
+        {
+            return RT_NEED_NEW;
+        }
+        /*再判断3块*/
+        x_index = block->x[2];
+        y_index = block->y[2];
+        if(g_pt_lv_blockgame->block[x_index][y_index + 1].is_fill == IS_FILL)/*已经被填充不能下移了*/
+        {
+            return RT_NEED_NEW;
+        }
+        break;
+    case STATE_2:
+        /*2块在1块的右边*/
+        /*3块在2块的下边*/
+        /*4块在块1的上边*/
+        /*需要判3块下边是否有空间,1块下边是否有空间*/
+        /*先判断3块*/
+        x_index = block->x[2];
+        y_index = block->y[2];
+        if(y_index == max_y)/*不能移动*/
+        {
+            /*y最大表示当前块碰壁了*/
+
+            return RT_NEED_NEW;
+        }
+        if(g_pt_lv_blockgame->block[x_index][y_index + 1].is_fill == IS_FILL)/*已经被填充不能下移了*/
+        {
+            return RT_NEED_NEW;
+        }
+        /*再判断1块*/
+        x_index = block->x[0];
+        y_index = block->y[0];
+        if(g_pt_lv_blockgame->block[x_index][y_index + 1].is_fill == IS_FILL)/*已经被填充不能下移了*/
+        {
+            return RT_NEED_NEW;
+        }
+        break;
+    case STATE_3:
+        /*2块在1块的下边*/
+        /*3块在2块的左边*/
+        /*4块在块1的右边*/
+        /*需要判3块下边是否有空间,2块下边是否有空间,4块*/
+        /*先判断3块*/
+        x_index = block->x[2];
+        y_index = block->y[2];
+        if(y_index == max_y)/*不能移动*/
+        {
+            /*y最大表示当前块碰壁了*/
+
+            return RT_NEED_NEW;
+        }
+        if(g_pt_lv_blockgame->block[x_index][y_index + 1].is_fill == IS_FILL)/*已经被填充不能下移了*/
+        {
+            return RT_NEED_NEW;
+        }
+        /*再判断2块*/
+        x_index = block->x[1];
+        y_index = block->y[1];
+        if(g_pt_lv_blockgame->block[x_index][y_index + 1].is_fill == IS_FILL)/*已经被填充不能下移了*/
+        {
+            return RT_NEED_NEW;
+        }
+        /*再判断4块*/
+        x_index = block->x[3];
+        y_index = block->y[3];
+        if(g_pt_lv_blockgame->block[x_index][y_index + 1].is_fill == IS_FILL)/*已经被填充不能下移了*/
+        {
+            return RT_NEED_NEW;
+        }
+        break;
+    case STATE_4:
+        /*2块在1块的左边*/
+        /*3块在2块的上边*/
+        /*4块在块1的下边*/
+        /*需要判4块下边是否有空间,2块下边是否有空间*/
+        /*先判断4块*/
+        x_index = block->x[3];
+        y_index = block->y[3];
+        if(y_index == max_y)/*不能移动*/
+        {
+            /*y最大表示当前块碰壁了*/
+
+            return RT_NEED_NEW;
+        }
+        if(g_pt_lv_blockgame->block[x_index][y_index + 1].is_fill == IS_FILL)/*已经被填充不能下移了*/
+        {
+            return RT_NEED_NEW;
+        }
+        /*再判断2块*/
+        x_index = block->x[1];
+        y_index = block->y[1];
+        if(g_pt_lv_blockgame->block[x_index][y_index + 1].is_fill == IS_FILL)/*已经被填充不能下移了*/
+        {
+            return RT_NEED_NEW;
+        }
+        break;
+    }
+
+    /*可以向下移动*/
+    for(i = 0; i < 4; i++)
+    {
+        block->y[i] += 1;
+    }
+
+}
+
+/* lv_block_game_move_style_6_block_left
+ * 第六种类型的块向左移动
+ */
+static void lv_block_game_move_style_6_block_left(Block_t *block)
+{
+    uint8_t state;
+    uint8_t x_index;
+    uint8_t y_index;
+    uint8_t i;
+    state = block->state;
+    switch(state)
+    {
+    case STATE_1:
+    case STATE_2:
+    case STATE_3:
+    case STATE_4:
+        /*2块在1块的右边*/
+        /*3块在2块的下边*/
+        /*4块在块1的下边*/
+        /*需要判断1块左边是否有空间,4块左边是否有空间*/
+        /*先判断1块*/
+        x_index = block->x[0];
+        y_index = block->y[0];
+        if(x_index == 0)/*不能移动*/
+        {
+            return;
+        }
+        if(g_pt_lv_blockgame->block[x_index - 1][y_index].is_fill == IS_FILL)/*已经被填充不能左移了*/
+        {
+            return;
+        }
+        /*再判断4块*/
+        x_index = block->x[3];
+        y_index = block->y[3];
+        if(g_pt_lv_blockgame->block[x_index - 1][y_index].is_fill == IS_FILL)/*已经被填充不能左移了*/
+        {
+            return;
+        }
+        break;
+
+    }
+
+    /*可以向左移动*/
+    for(i = 0; i < 4; i++)
+    {
+        block->x[i] -= 1;
+    }
+
+}
+
+
+/* lv_block_game_move_style_6_block_right
+ * 第六种类型的块向右移动
+ */
+static void lv_block_game_move_style_6_block_right(Block_t *block)
+{
+    uint8_t max_x;
+    uint8_t state;
+    uint8_t x_index;
+    uint8_t y_index;
+    uint8_t i;
+    max_x = LV_BLOCK_GAME_VALID_CONT_W/LV_BLOCK_GAME_BASE_CONT_SIZE - 1;
+    state = block->state;
+    switch(state)
+    {
+    case STATE_1:
+    case STATE_2:
+    case STATE_3:
+    case STATE_4:
+        /*2块在1块的右边*/
+        /*3块在2块的下边*/
+        /*4块在块1的下边*/
+        /*需要判2块右边是否有空间,3块右边是否有空间*/
+        /*先判断2块*/
+        x_index = block->x[1];
+        y_index = block->y[1];
+        if(x_index == max_x)/*不能移动*/
+        {
+            return;
+        }
+        if(g_pt_lv_blockgame->block[x_index + 1][y_index].is_fill == IS_FILL)/*已经被填充不能右移了*/
+        {
+            return;
+        }
+        /*再判断3块*/
+        x_index = block->x[2];
+        y_index = block->y[2];
+        if(g_pt_lv_blockgame->block[x_index + 1][y_index].is_fill == IS_FILL)/*已经被填充不能右移了*/
+        {
+            return;
+        }
+        break;
+    }
+
+    /*可以向左移动*/
+    for(i = 0; i < 4; i++)
+    {
+        block->x[i] += 1;
+    }
+
+}
+
+/* lv_block_game_move_style_6_block_down
+ * 第六种类型的块向下移动
+ */
+static int lv_block_game_move_style_6_block_down(Block_t *block)
+{
+    uint8_t max_y;
+    uint8_t state;
+    uint8_t x_index;
+    uint8_t y_index;
+    uint8_t i;
+    max_y = LV_BLOCK_GAME_VALID_CONT_H/LV_BLOCK_GAME_BASE_CONT_SIZE - 1;
+    state = block->state;
+    switch(state)
+    {
+    case STATE_1:
+    case STATE_2:
+    case STATE_3:
+    case STATE_4:
+        /*2块在1块的右边*/
+        /*3块在2块的下边*/
+        /*4块在块1的下边*/
+        /*需要判4块下边是否有空间,3块下边*/
+        /*先判断4块*/
+        x_index = block->x[3];
+        y_index = block->y[3];
+        if(y_index == max_y)/*不能移动*/
+        {
+            /*y最大表示当前块碰壁了*/
+
+            return RT_NEED_NEW;
+        }
+        if(g_pt_lv_blockgame->block[x_index][y_index + 1].is_fill == IS_FILL)/*已经被填充不能下移了*/
+        {
+            return RT_NEED_NEW;
+        }
+        /*再判断3块*/
+        x_index = block->x[2];
+        y_index = block->y[2];
+        if(g_pt_lv_blockgame->block[x_index][y_index + 1].is_fill == IS_FILL)/*已经被填充不能下移了*/
+        {
+            return RT_NEED_NEW;
+        }
+        break;
+    }
+
+    /*可以向下移动*/
+    for(i = 0; i < 4; i++)
+    {
+        block->y[i] += 1;
+    }
+
+}
+
+/* lv_block_game_move_style_7_block_left
+ * 第七种类型的块向左移动
+ */
+static void lv_block_game_move_style_7_block_left(Block_t *block)
+{
+    uint8_t state;
+    uint8_t x_index;
+    uint8_t y_index;
+    uint8_t i;
+    state = block->state;
+    switch(state)
+    {
+    case STATE_1:
+        /*2块在1块的右边*/
+        /*3块在2块的右边*/
+        /*4块在块1的左边*/
+        /*需要判断4块左边是否有空间*/
+        /*先判断4块*/
+        x_index = block->x[3];
+        y_index = block->y[3];
+        if(x_index == 0)/*不能移动*/
+        {
+            return;
+        }
+        if(g_pt_lv_blockgame->block[x_index - 1][y_index].is_fill == IS_FILL)/*已经被填充不能左移了*/
+        {
+            return;
+        }
+        break;
+    case STATE_2:
+        /*2块在1块的下边*/
+        /*3块在2块的下边*/
+        /*4块在块1的上边*/
+        /*需要判断4块左边,1块左边是否有空间,2块,3块左边是否有空间*/
+        /*先判断4块*/
+        x_index = block->x[3];
+        y_index = block->y[3];
+        if(x_index == 0)/*不能移动*/
+        {
+            return;
+        }
+        if(g_pt_lv_blockgame->block[x_index - 1][y_index].is_fill == IS_FILL)/*已经被填充不能左移了*/
+        {
+            return;
+        }
+        /*再判断1块*/
+        x_index = block->x[0];
+        y_index = block->y[0];
+        if(g_pt_lv_blockgame->block[x_index - 1][y_index].is_fill == IS_FILL)/*已经被填充不能左移了*/
+        {
+            return;
+        }
+        /*再判断2块*/
+        x_index = block->x[1];
+        y_index = block->y[1];
+        if(g_pt_lv_blockgame->block[x_index - 1][y_index].is_fill == IS_FILL)/*已经被填充不能左移了*/
+        {
+            return;
+        }
+        /*再判断3块*/
+        x_index = block->x[2];
+        y_index = block->y[2];
+        if(g_pt_lv_blockgame->block[x_index - 1][y_index].is_fill == IS_FILL)/*已经被填充不能左移了*/
+        {
+            return;
+        }
+        break;
+    case STATE_3:
+        /*2块在1块的右边*/
+        /*3块在2块的右边*/
+        /*4块在块1的左边*/
+        /*需要判断4块左边是否有空间*/
+        /*先判断4块*/
+        x_index = block->x[3];
+        y_index = block->y[3];
+        if(x_index == 0)/*不能移动*/
+        {
+            return;
+        }
+        if(g_pt_lv_blockgame->block[x_index - 1][y_index].is_fill == IS_FILL)/*已经被填充不能左移了*/
+        {
+            return;
+        }
+        break;
+    case STATE_4:
+        /*2块在1块的下边*/
+        /*3块在2块的下边*/
+        /*4块在块1的上边*/
+        /*需要判断4块左边,1块左边是否有空间,2块,3块左边是否有空间*/
+        /*先判断4块*/
+        x_index = block->x[3];
+        y_index = block->y[3];
+        if(x_index == 0)/*不能移动*/
+        {
+            return;
+        }
+        if(g_pt_lv_blockgame->block[x_index - 1][y_index].is_fill == IS_FILL)/*已经被填充不能左移了*/
+        {
+            return;
+        }
+        /*再判断1块*/
+        x_index = block->x[0];
+        y_index = block->y[0];
+        if(g_pt_lv_blockgame->block[x_index - 1][y_index].is_fill == IS_FILL)/*已经被填充不能左移了*/
+        {
+            return;
+        }
+        /*再判断2块*/
+        x_index = block->x[1];
+        y_index = block->y[1];
+        if(g_pt_lv_blockgame->block[x_index - 1][y_index].is_fill == IS_FILL)/*已经被填充不能左移了*/
+        {
+            return;
+        }
+        /*再判断3块*/
+        x_index = block->x[2];
+        y_index = block->y[2];
+        if(g_pt_lv_blockgame->block[x_index - 1][y_index].is_fill == IS_FILL)/*已经被填充不能左移了*/
+        {
+            return;
+        }
+        break;
+    }
+
+    /*可以向左移动*/
+    for(i = 0; i < 4; i++)
+    {
+        block->x[i] -= 1;
+    }
+
+}
+
+
+/* lv_block_game_move_style_7_block_right
+ * 第七种类型的块向右移动
+ */
+static void lv_block_game_move_style_7_block_right(Block_t *block)
+{
+    uint8_t max_x;
+    uint8_t state;
+    uint8_t x_index;
+    uint8_t y_index;
+    uint8_t i;
+    max_x = LV_BLOCK_GAME_VALID_CONT_W/LV_BLOCK_GAME_BASE_CONT_SIZE - 1;
+    state = block->state;
+    switch(state)
+    {
+    case STATE_1:
+        /*2块在1块的右边*/
+        /*3块在2块的右边*/
+        /*4块在块1的左边*/
+        /*需要判3块右边是否有空间*/
+        /*先判断3块*/
+        x_index = block->x[2];
+        y_index = block->y[2];
+        if(x_index == max_x)/*不能移动*/
+        {
+            return;
+        }
+        if(g_pt_lv_blockgame->block[x_index + 1][y_index].is_fill == IS_FILL)/*已经被填充不能右移了*/
+        {
+            return;
+        }
+        break;
+    case STATE_2:
+        /*2块在1块的下边*/
+        /*3块在2块的下边*/
+        /*4块在块1的上边*/
+        /*需要判断4块右边是否有空间,1块,2块右边是否有空间,3块右边*/
+        /*先判断4块*/
+        x_index = block->x[3];
+        y_index = block->y[3];
+        if(x_index == max_x)/*不能移动*/
+        {
+            return;
+        }
+        if(g_pt_lv_blockgame->block[x_index + 1][y_index].is_fill == IS_FILL)/*已经被填充不能右移了*/
+        {
+            return;
+        }
+        /*再判断1块*/
+        x_index = block->x[0];
+        y_index = block->y[0];
+        if(g_pt_lv_blockgame->block[x_index + 1][y_index].is_fill == IS_FILL)/*已经被填充不能右移了*/
+        {
+            return;
+        }
+        /*再判断2块*/
+        x_index = block->x[1];
+        y_index = block->y[1];
+        if(g_pt_lv_blockgame->block[x_index + 1][y_index].is_fill == IS_FILL)/*已经被填充不能右移了*/
+        {
+            return;
+        }
+        /*再判断3块*/
+        x_index = block->x[2];
+        y_index = block->y[2];
+        if(g_pt_lv_blockgame->block[x_index + 1][y_index].is_fill == IS_FILL)/*已经被填充不能右移了*/
+        {
+            return;
+        }
+        break;
+    case STATE_3:
+        /*2块在1块的右边*/
+        /*3块在2块的右边*/
+        /*4块在块1的左边*/
+        /*需要判3块右边是否有空间*/
+        /*先判断3块*/
+        x_index = block->x[2];
+        y_index = block->y[2];
+        if(x_index == max_x)/*不能移动*/
+        {
+            return;
+        }
+        if(g_pt_lv_blockgame->block[x_index + 1][y_index].is_fill == IS_FILL)/*已经被填充不能右移了*/
+        {
+            return;
+        }
+        break;
+    case STATE_4:
+        /*2块在1块的下边*/
+        /*3块在2块的下边*/
+        /*4块在块1的上边*/
+        /*需要判断4块右边是否有空间,1块,2块右边是否有空间,3块右边*/
+        /*先判断4块*/
+        x_index = block->x[3];
+        y_index = block->y[3];
+        if(x_index == max_x)/*不能移动*/
+        {
+            return;
+        }
+        if(g_pt_lv_blockgame->block[x_index + 1][y_index].is_fill == IS_FILL)/*已经被填充不能右移了*/
+        {
+            return;
+        }
+        /*再判断1块*/
+        x_index = block->x[0];
+        y_index = block->y[0];
+        if(g_pt_lv_blockgame->block[x_index + 1][y_index].is_fill == IS_FILL)/*已经被填充不能右移了*/
+        {
+            return;
+        }
+        /*再判断2块*/
+        x_index = block->x[1];
+        y_index = block->y[1];
+        if(g_pt_lv_blockgame->block[x_index + 1][y_index].is_fill == IS_FILL)/*已经被填充不能右移了*/
+        {
+            return;
+        }
+        /*再判断3块*/
+        x_index = block->x[2];
+        y_index = block->y[2];
+        if(g_pt_lv_blockgame->block[x_index + 1][y_index].is_fill == IS_FILL)/*已经被填充不能右移了*/
+        {
+            return;
+        }
+        break;
+    }
+
+    /*可以向左移动*/
+    for(i = 0; i < 4; i++)
+    {
+        block->x[i] += 1;
+    }
+
+}
+
+/* lv_block_game_move_style_7_block_down
+ * 第七种类型的块向下移动
+ */
+static int lv_block_game_move_style_7_block_down(Block_t *block)
+{
+    uint8_t max_y;
+    uint8_t state;
+    uint8_t x_index;
+    uint8_t y_index;
+    uint8_t i;
+    max_y = LV_BLOCK_GAME_VALID_CONT_H/LV_BLOCK_GAME_BASE_CONT_SIZE - 1;
+    state = block->state;
+    switch(state)
+    {
+    case STATE_1:
+        /*2块在1块的右边*/
+        /*3块在2块的右边*/
+        /*4块在块1的左边*/
+        /*需要判4块下边是否有空间,1块下边是否有空间,2块,3块下边*/
+        /*先判断4块*/
+        x_index = block->x[3];
+        y_index = block->y[3];
+        if(y_index == max_y)/*不能移动*/
+        {
+            /*y最大表示当前块碰壁了*/
+
+            return RT_NEED_NEW;
+        }
+        if(g_pt_lv_blockgame->block[x_index][y_index + 1].is_fill == IS_FILL)/*已经被填充不能下移了*/
+        {
+            return RT_NEED_NEW;
+        }
+        /*再判断1块*/
+        x_index = block->x[0];
+        y_index = block->y[0];
+        if(g_pt_lv_blockgame->block[x_index][y_index + 1].is_fill == IS_FILL)/*已经被填充不能下移了*/
+        {
+            return RT_NEED_NEW;
+        }
+        /*再判断2块*/
+        x_index = block->x[1];
+        y_index = block->y[1];
+        if(g_pt_lv_blockgame->block[x_index][y_index + 1].is_fill == IS_FILL)/*已经被填充不能下移了*/
+        {
+            return RT_NEED_NEW;
+        }
+        /*再判断3块*/
+        x_index = block->x[2];
+        y_index = block->y[2];
+        if(g_pt_lv_blockgame->block[x_index][y_index + 1].is_fill == IS_FILL)/*已经被填充不能下移了*/
+        {
+            return RT_NEED_NEW;
+        }
+        break;
+    case STATE_2:
+        /*2块在1块的下边*/
+        /*3块在2块的下边*/
+        /*4块在块1的上边*/
+        /*需要判3块下边是否有空间*/
+        /*先判断3块*/
+        x_index = block->x[2];
+        y_index = block->y[2];
+        if(y_index == max_y)/*不能移动*/
+        {
+            /*y最大表示当前块碰壁了*/
+
+            return RT_NEED_NEW;
+        }
+        if(g_pt_lv_blockgame->block[x_index][y_index + 1].is_fill == IS_FILL)/*已经被填充不能下移了*/
+        {
+            return RT_NEED_NEW;
+        }
+        break;
+    case STATE_3:
+        /*2块在1块的右边*/
+        /*3块在2块的右边*/
+        /*4块在块1的左边*/
+        /*需要判4块下边是否有空间,1块下边是否有空间,2块,3块下边*/
+        /*先判断4块*/
+        x_index = block->x[3];
+        y_index = block->y[3];
+        if(y_index == max_y)/*不能移动*/
+        {
+            /*y最大表示当前块碰壁了*/
+
+            return RT_NEED_NEW;
+        }
+        if(g_pt_lv_blockgame->block[x_index][y_index + 1].is_fill == IS_FILL)/*已经被填充不能下移了*/
+        {
+            return RT_NEED_NEW;
+        }
+        /*再判断1块*/
+        x_index = block->x[0];
+        y_index = block->y[0];
+        if(g_pt_lv_blockgame->block[x_index][y_index + 1].is_fill == IS_FILL)/*已经被填充不能下移了*/
+        {
+            return RT_NEED_NEW;
+        }
+        /*再判断2块*/
+        x_index = block->x[1];
+        y_index = block->y[1];
+        if(g_pt_lv_blockgame->block[x_index][y_index + 1].is_fill == IS_FILL)/*已经被填充不能下移了*/
+        {
+            return RT_NEED_NEW;
+        }
+        /*再判断3块*/
+        x_index = block->x[2];
+        y_index = block->y[2];
+        if(g_pt_lv_blockgame->block[x_index][y_index + 1].is_fill == IS_FILL)/*已经被填充不能下移了*/
+        {
+            return RT_NEED_NEW;
+        }
+        break;
+    case STATE_4:
+        /*2块在1块的下边*/
+        /*3块在2块的下边*/
+        /*4块在块1的上边*/
+        /*需要判3块下边是否有空间*/
+        /*先判断3块*/
+        x_index = block->x[2];
+        y_index = block->y[2];
+        if(y_index == max_y)/*不能移动*/
+        {
+            /*y最大表示当前块碰壁了*/
+
+            return RT_NEED_NEW;
+        }
+        if(g_pt_lv_blockgame->block[x_index][y_index + 1].is_fill == IS_FILL)/*已经被填充不能下移了*/
+        {
+            return RT_NEED_NEW;
+        }
+        break;
+    }
+
+    /*可以向下移动*/
+    for(i = 0; i < 4; i++)
+    {
+        block->y[i] += 1;
+    }
+
+}
+
 /* lv_block_game_move_block_left
  * 把一个方块向左移动
  */
@@ -1627,6 +3116,18 @@ static void lv_block_game_move_block_left(Block_t *block)
         break;
     case STYLE_3:
         lv_block_game_move_style_3_block_left(block);
+        break;
+    case STYLE_4:
+        lv_block_game_move_style_4_block_left(block);
+        break;
+    case STYLE_5:
+        lv_block_game_move_style_5_block_left(block);
+        break;
+    case STYLE_6:
+        lv_block_game_move_style_6_block_left(block);
+        break;
+    case STYLE_7:
+        lv_block_game_move_style_7_block_left(block);
         break;
     }
     lv_block_game_update_current_block();
@@ -1647,6 +3148,18 @@ static void lv_block_game_move_block_right(Block_t *block)
         break;
     case STYLE_3:
         lv_block_game_move_style_3_block_right(block);
+        break;
+    case STYLE_4:
+        lv_block_game_move_style_4_block_right(block);
+        break;
+    case STYLE_5:
+        lv_block_game_move_style_5_block_right(block);
+        break;
+    case STYLE_6:
+        lv_block_game_move_style_6_block_right(block);
+        break;
+    case STYLE_7:
+        lv_block_game_move_style_7_block_right(block);
         break;
     }
     lv_block_game_update_current_block();
@@ -1758,6 +3271,18 @@ static void lv_block_game_move_block_down(Block_t *block)
         break;
     case STYLE_3:
         nRet = lv_block_game_move_style_3_block_down(block);
+        break;
+    case STYLE_4:
+        nRet = lv_block_game_move_style_4_block_down(block);
+        break;
+    case STYLE_5:
+        nRet = lv_block_game_move_style_5_block_down(block);
+        break;
+    case STYLE_6:
+        nRet = lv_block_game_move_style_6_block_down(block);
+        break;
+    case STYLE_7:
+        nRet = lv_block_game_move_style_7_block_down(block);
         break;
     }
     #if 1
@@ -1914,7 +3439,6 @@ static void lv_block_game_switch_style_1_state(Block_t *block)
     switch(state)
     {
     case STATE_1:
-        block->state = STATE_2;
         /*1状态切换到2状态需要判断右边是否有空间*/
         /*需要判断1块上边是否有空间*/
         x_index = block->x[0];
@@ -1923,6 +3447,7 @@ static void lv_block_game_switch_style_1_state(Block_t *block)
         {
             break;
         }
+        block->state = STATE_2;
         lv_block_game_set_style_1_state(block);
         break;
     case STATE_2:
@@ -1994,8 +3519,8 @@ static void lv_block_game_set_style_2_state(Block_t *block)
         lv_block_game_align(2, 1, block->x, block->y, BL_ALIGN_TOP);
         /*4块在块1的下边*/
         lv_block_game_align(4, 1, block->x, block->y, BL_ALIGN_BOTTOM);
-        /*3块在4块的左边*/
-        lv_block_game_align(3, 4, block->x, block->y, BL_ALIGN_LEFT);
+        /*3块在4块的右边*/
+        lv_block_game_align(3, 4, block->x, block->y, BL_ALIGN_RIGHT);
         break;
     case STATE_2:
         /*2块在1块的右边*/
@@ -2055,7 +3580,6 @@ static void lv_block_game_switch_style_2_state(Block_t *block)
     switch(state)
     {
     case STATE_1:
-        block->state = STATE_2;
         /*1状态切换到2状态需要判断右边是否有空间*/
         /*需要判断1块左边是否有一个空间 4块左边是否有1个空间 1块右边是否有1个空间*/
         /*判断1块右边是否有1个空间*/
@@ -2081,6 +3605,7 @@ static void lv_block_game_switch_style_2_state(Block_t *block)
         {
             break;
         }
+        block->state = STATE_2;
         lv_block_game_set_style_2_state(block);
         break;
     case STATE_2:
@@ -2093,18 +3618,25 @@ static void lv_block_game_switch_style_2_state(Block_t *block)
         {
             break;
         }
-        /*判断1块上边是否有空间*/
-        if(g_pt_lv_blockgame->block[x_index][y_index - 1].is_fill == IS_FILL)/*没空间*/
+        if(y_index != 0)/*如果不为0就判断上面*/
         {
-            break;
+            /*判断1块上边是否有空间*/
+            if(g_pt_lv_blockgame->block[x_index][y_index - 1].is_fill == IS_FILL)/*没空间*/
+            {
+                break;
+            }
         }
         /*判断4块上边是否有空间*/
         x_index = block->x[3];
         y_index = block->y[3];
-        if(g_pt_lv_blockgame->block[x_index][y_index - 1].is_fill == IS_FILL)/*没空间*/
+        if(y_index != 0)/*如果不为0就判断上面*/
         {
-            break;
+            if(g_pt_lv_blockgame->block[x_index][y_index - 1].is_fill == IS_FILL)/*没空间*/
+            {
+                break;
+            }
         }
+
         block->state = STATE_3;
         lv_block_game_set_style_2_state(block);
         break;
@@ -2152,19 +3684,25 @@ static void lv_block_game_switch_style_2_state(Block_t *block)
         {
             break;
         }
-        /*判断1块上边是否有空间*/
-        if(g_pt_lv_blockgame->block[x_index][y_index - 1].is_fill == IS_FILL)/*没空间*/
+        if(y_index != 0)
         {
-            break;
+            /*判断1块上边是否有空间*/
+            if(g_pt_lv_blockgame->block[x_index][y_index - 1].is_fill == IS_FILL)/*没空间*/
+            {
+                break;
+            }
         }
+
         /*判断4块下边是否有空间*/
         x_index = block->x[3];
         y_index = block->y[3];
-        if(g_pt_lv_blockgame->block[x_index][y_index - 1].is_fill == IS_FILL)/*没空间*/
+        if(y_index != 0)
         {
-            break;
+            if(g_pt_lv_blockgame->block[x_index][y_index - 1].is_fill == IS_FILL)/*没空间*/
+            {
+                break;
+            }
         }
-
         block->state = STATE_1;
         lv_block_game_set_style_2_state(block);
         break;
@@ -2247,7 +3785,6 @@ static void lv_block_game_switch_style_3_state(Block_t *block)
     switch(state)
     {
     case STATE_1:
-        block->state = STATE_2;
         /*1状态切换到2状态需要判断右边是否有空间*/
         /*需要判断1块右边是否有一个空间 4块左边是否有1个空间 1块左边是否有1个空间*/
         /*判断1块右边是否有1个空间*/
@@ -2277,6 +3814,8 @@ static void lv_block_game_switch_style_3_state(Block_t *block)
         {
             break;
         }
+        block->state = STATE_2;
+        lv_block_game_set_style_3_state(block);
         break;
     case STATE_2:
         /*2状态切换到3状态需要判断右边是否有空间*/
@@ -2292,11 +3831,15 @@ static void lv_block_game_switch_style_3_state(Block_t *block)
         {
             break;
         }
-        /*判断1块上边是否有空间*/
-        if(g_pt_lv_blockgame->block[x_index][y_index - 1].is_fill == IS_FILL)/*没空间*/
+        if(y_index != 0)
         {
-            break;
+            /*判断1块上边是否有空间*/
+            if(g_pt_lv_blockgame->block[x_index][y_index - 1].is_fill == IS_FILL)/*没空间*/
+            {
+                break;
+            }
         }
+
         /*判断4块上边是否有空间*/
         x_index = block->x[3];
         y_index = block->y[3];
@@ -2305,6 +3848,7 @@ static void lv_block_game_switch_style_3_state(Block_t *block)
             break;
         }
         block->state = STATE_3;
+        lv_block_game_set_style_3_state(block);
         break;
     case STATE_3:
         /*3状态切换到4状态需要判断1块下边是否有空间*/
@@ -2338,6 +3882,7 @@ static void lv_block_game_switch_style_3_state(Block_t *block)
         }
 
         block->state = STATE_4;
+        lv_block_game_set_style_3_state(block);
         break;
     case STATE_4:
         /*4状态切换到1状态需要判断左边是否有空间*/
@@ -2353,11 +3898,15 @@ static void lv_block_game_switch_style_3_state(Block_t *block)
         {
             break;
         }
-        /*判断1块上边是否有空间*/
-        if(g_pt_lv_blockgame->block[x_index][y_index - 1].is_fill == IS_FILL)/*没空间*/
+        if(y_index != 0)
         {
-            break;
+            /*判断1块上边是否有空间*/
+            if(g_pt_lv_blockgame->block[x_index][y_index - 1].is_fill == IS_FILL)/*没空间*/
+            {
+                break;
+            }
         }
+
         /*判断4块下边是否有空间*/
         x_index = block->x[3];
         y_index = block->y[3];
@@ -2367,9 +3916,10 @@ static void lv_block_game_switch_style_3_state(Block_t *block)
         }
 
         block->state = STATE_1;
+        lv_block_game_set_style_3_state(block);
         break;
     }
-    lv_block_game_set_style_3_state(block);
+
 }
 
 /* lv_block_game_set_style_4_state
@@ -2447,7 +3997,6 @@ static void lv_block_game_switch_style_4_state(Block_t *block)
     switch(state)
     {
     case STATE_1:
-        block->state = STATE_2;
         /*1状态切换到2状态需要判断右边是否有空间*/
         /*需要判断1块下边是否有一个空间 4块右边是否有1个空间*/
         /*判断1块下边是否有1个空间*/
@@ -2468,6 +4017,8 @@ static void lv_block_game_switch_style_4_state(Block_t *block)
         {
             break;
         }
+        block->state = STATE_2;
+        lv_block_game_set_style_4_state(block);
         break;
     case STATE_2:
         /*2状态切换到3状态需要判断右边是否有空间*/
@@ -2492,6 +4043,7 @@ static void lv_block_game_switch_style_4_state(Block_t *block)
             break;
         }
         block->state = STATE_3;
+        lv_block_game_set_style_4_state(block);
         break;
     case STATE_3:
         /*3状态切换到4状态需要判断1块下边是否有空间*/
@@ -2499,9 +4051,13 @@ static void lv_block_game_switch_style_4_state(Block_t *block)
         /*判断1块上边是否有空间*/
         x_index = block->x[0];
         y_index = block->y[0];
-        if(g_pt_lv_blockgame->block[x_index][y_index - 1].is_fill == IS_FILL)/*没空间*/
+        if(y_index != 0)
         {
-            break;
+            if(g_pt_lv_blockgame->block[x_index][y_index - 1].is_fill == IS_FILL)/*没空间*/
+            {
+                break;
+            }
+
         }
 
         /*判断4块左边是否有空间*/
@@ -2513,6 +4069,7 @@ static void lv_block_game_switch_style_4_state(Block_t *block)
         }
 
         block->state = STATE_4;
+        lv_block_game_set_style_4_state(block);
         break;
     case STATE_4:
         /*4状态切换到1状态需要判断左边是否有空间*/
@@ -2531,16 +4088,19 @@ static void lv_block_game_switch_style_4_state(Block_t *block)
         /*判断4块上边是否有空间*/
         x_index = block->x[3];
         y_index = block->y[3];
-        if(g_pt_lv_blockgame->block[x_index][y_index - 1].is_fill == IS_FILL)/*没空间*/
+        if(y_index != 0)
         {
-            break;
+            if(g_pt_lv_blockgame->block[x_index][y_index - 1].is_fill == IS_FILL)/*没空间*/
+            {
+                break;
+            }
         }
 
         block->state = STATE_1;
-
+        lv_block_game_set_style_4_state(block);
         break;
     }
-    lv_block_game_set_style_4_state(block);
+
 }
 
 
@@ -2619,13 +4179,16 @@ static void lv_block_game_switch_style_5_state(Block_t *block)
     switch(state)
     {
     case STATE_1:
-        block->state = STATE_2;
+
         /*1状态切换到2状态需要判断右边是否有空间*/
         /*需要判断1块右边边是否有一个空间 1块右边的下边是否有1个空间*/
         /*判断1块右边是否有1个空间*/
         x_index = block->x[0];
         y_index = block->y[0];
-
+        if(x_index == max_x)
+        {
+            break;
+        }
         if(g_pt_lv_blockgame->block[x_index + 1][y_index].is_fill == IS_FILL)/*没空间*/
         {
             break;
@@ -2641,6 +4204,8 @@ static void lv_block_game_switch_style_5_state(Block_t *block)
         {
             break;
         }
+        block->state = STATE_2;
+        lv_block_game_set_style_5_state(block);
         break;
     case STATE_2:
         /*2状态切换到3状态需要判断右边是否有空间*/
@@ -2648,6 +4213,10 @@ static void lv_block_game_switch_style_5_state(Block_t *block)
         /*判断1块下边是否有空间*/
         x_index = block->x[0];
         y_index = block->y[0];
+        if(y_index == max_y)
+        {
+            break;
+        }
         if(g_pt_lv_blockgame->block[x_index][y_index + 1].is_fill == IS_FILL)/*没空间*/
         {
             break;
@@ -2656,11 +4225,16 @@ static void lv_block_game_switch_style_5_state(Block_t *block)
         /*判断1块下边的左边是否有空间*/
         x_index = block->x[0];
         y_index = block->y[0] + 1;
+        if(x_index == 0)
+        {
+            break;
+        }
         if(g_pt_lv_blockgame->block[x_index - 1][y_index].is_fill == IS_FILL)/*没空间*/
         {
             break;
         }
         block->state = STATE_3;
+        lv_block_game_set_style_5_state(block);
         break;
     case STATE_3:
         /*3状态切换到4状态需要判断1块下边是否有空间*/
@@ -2668,6 +4242,10 @@ static void lv_block_game_switch_style_5_state(Block_t *block)
         /*判断1块左边是否有空间*/
         x_index = block->x[0];
         y_index = block->y[0];
+        if(x_index == 0)
+        {
+            break;
+        }
         if(g_pt_lv_blockgame->block[x_index - 1][y_index].is_fill == IS_FILL)/*没空间*/
         {
             break;
@@ -2676,12 +4254,16 @@ static void lv_block_game_switch_style_5_state(Block_t *block)
         /*判断1块左边的上边是否有空间*/
         x_index = block->x[0] - 1;
         y_index = block->y[0];
-        if(g_pt_lv_blockgame->block[x_index][y_index - 1].is_fill == IS_FILL)/*没空间*/
+        if(y_index != 0)
         {
-            break;
+            if(g_pt_lv_blockgame->block[x_index][y_index - 1].is_fill == IS_FILL)/*没空间*/
+            {
+                break;
+            }
         }
 
         block->state = STATE_4;
+        lv_block_game_set_style_5_state(block);
         break;
     case STATE_4:
         /*4状态切换到1状态需要判断左边是否有空间*/
@@ -2689,28 +4271,35 @@ static void lv_block_game_switch_style_5_state(Block_t *block)
         /*判断1块上边*/
         x_index = block->x[0];
         y_index = block->y[0];
+        if(y_index != 0)
+        {
+            if(g_pt_lv_blockgame->block[x_index][y_index - 1].is_fill == IS_FILL)/*没空间*/
+            {
+                break;
+            }
+        }
 
-        if(g_pt_lv_blockgame->block[x_index][y_index - 1].is_fill == IS_FILL)/*没空间*/
-        {
-            break;
-        }
         /*判断1块上边的右边是否有空间*/
-        x_index = block->x[0];
-        y_index = block->y[0] - 1;
-        if(x_index == max_x)
+        if(y_index != 0)
         {
-            break;
+            x_index = block->x[0];
+            y_index = block->y[0] - 1;
+            if(x_index == max_x)
+            {
+                break;
+            }
+            if(g_pt_lv_blockgame->block[x_index + 1][y_index].is_fill == IS_FILL)/*没空间*/
+            {
+                break;
+            }
         }
-        if(g_pt_lv_blockgame->block[x_index + 1][y_index].is_fill == IS_FILL)/*没空间*/
-        {
-            break;
-        }
+
 
         block->state = STATE_1;
-
+        lv_block_game_set_style_5_state(block);
         break;
     }
-    lv_block_game_set_style_5_state(block);
+
 }
 
 
@@ -2833,26 +4422,29 @@ static void lv_block_game_switch_style_7_state(Block_t *block)
     switch(state)
     {
     case STATE_1:
-        block->state = STATE_2;
+
         /*1状态切换到2状态需要判断右边是否有空间*/
-        /*需要判断1块上边是否有一个空间 1块下边是否有1个空间,1块下边的下边是否右空间*/
+        /*需要判断1块上边是否有一个空间 1块下边是否有2个空间*/
         /*判断1块上边是否有1个空间*/
         x_index = block->x[0];
         y_index = block->y[0];
-
-        if(g_pt_lv_blockgame->block[x_index][y_index - 1].is_fill == IS_FILL)/*没空间*/
+        if(y_index != 0)
         {
-            break;
+            if(g_pt_lv_blockgame->block[x_index][y_index - 1].is_fill == IS_FILL)/*没空间*/
+            {
+                break;
+            }
         }
-        /*判断1块下边的下边有是否空间*/
+
+        /*判断1块下边的是否有两个空间*/
         x_index = block->x[0];
         y_index = block->y[0];
-        if(y_index == max_y)/*1块已经是最底了*/
+        if(y_index + 2 > max_y)/*没有两个空*/
         {
             break;
         }
-        y_index += 1;/*1块的下一块*/
-        if(y_index == max_y)
+
+        if(g_pt_lv_blockgame->block[x_index][y_index + 2].is_fill == IS_FILL)/*没空间*/
         {
             break;
         }
@@ -2860,18 +4452,12 @@ static void lv_block_game_switch_style_7_state(Block_t *block)
         {
             break;
         }
-        /*判断1块下边有没有空间*/
-        x_index = block->x[0];
-        y_index = block->y[0];
-        if(g_pt_lv_blockgame->block[x_index][y_index + 1].is_fill == IS_FILL)/*没空间*/
-        {
-            break;
-        }
-
+        block->state = STATE_2;
+        lv_block_game_set_style_7_state(block);
         break;
     case STATE_2:
         /*2状态切换到3状态需要判断右边是否有空间*/
-        /*需要判断1块左边是否有空间,1块的右边是否右空间,1块右边的右边是否有空间*/
+        /*需要判断1块左边是否有空间,1块的右边是否有两个空间*/
         /*判断1块左边是否有空间*/
         x_index = block->x[0];
         y_index = block->y[0];
@@ -2884,48 +4470,47 @@ static void lv_block_game_switch_style_7_state(Block_t *block)
             break;
         }
 
-        /*判断1块右边的右边是否有空间*/
-        if(x_index == max_x)/*1块就再最右边了*/
-        {
-            break;
-        }
-        x_index += 1;
-        if(x_index == max_x)/*1块的右边在最右边了*/
+        /*判断1块右边是否有两个空间*/
+        if(x_index + 2 > max_x)
         {
             break;
         }
         /*判断1块右边的右边是否有空间*/
-        if(g_pt_lv_blockgame->block[x_index + 1][y_index].is_fill == IS_FILL)/*没空间*/
+        if(g_pt_lv_blockgame->block[x_index + 2][y_index].is_fill == IS_FILL)/*没空间*/
         {
             break;
         }
         /*判断1块的右边是否有空间*/
-        if(g_pt_lv_blockgame->block[x_index][y_index].is_fill == IS_FILL)/*没空间*/
+        if(g_pt_lv_blockgame->block[x_index + 1][y_index].is_fill == IS_FILL)/*没空间*/
         {
             break;
         }
         block->state = STATE_3;
+        lv_block_game_set_style_7_state(block);
         break;
     case STATE_3:
         /*3状态切换到4状态需要判断1块下边是否有空间*/
-        /*需要判断1块上边是否有一个空间 1块下边是否有1个空间,1块下边的下边是否右空间*/
+        /*需要判断1块上边是否有一个空间 1块下边是否有2个空间*/
         /*判断1块上边是否有1个空间*/
         x_index = block->x[0];
         y_index = block->y[0];
-
-        if(g_pt_lv_blockgame->block[x_index][y_index - 1].is_fill == IS_FILL)/*没空间*/
+        if(y_index != 0)
         {
-            break;
+            if(g_pt_lv_blockgame->block[x_index][y_index - 1].is_fill == IS_FILL)/*没空间*/
+            {
+                break;
+            }
         }
-        /*判断1块下边的下边有是否空间*/
+
+        /*判断1块下边的是否有两个空间*/
         x_index = block->x[0];
         y_index = block->y[0];
-        if(y_index == max_y)/*1块已经是最底了*/
+        if(y_index + 2 > max_y)/*没有两个空*/
         {
             break;
         }
-        y_index += 1;/*1块的下一块*/
-        if(y_index == max_y)
+
+        if(g_pt_lv_blockgame->block[x_index][y_index + 2].is_fill == IS_FILL)/*没空间*/
         {
             break;
         }
@@ -2933,19 +4518,12 @@ static void lv_block_game_switch_style_7_state(Block_t *block)
         {
             break;
         }
-        /*判断1块下边有没有空间*/
-        x_index = block->x[0];
-        y_index = block->y[0];
-        if(g_pt_lv_blockgame->block[x_index][y_index + 1].is_fill == IS_FILL)/*没空间*/
-        {
-            break;
-        }
-
         block->state = STATE_4;
+        lv_block_game_set_style_7_state(block);
         break;
     case STATE_4:
         /*4状态切换到1状态需要判断左边是否有空间*/
-        /*需要判断1块左边是否有空间,1块的右边是否右空间,1块右边的右边是否有空间*/
+        /*需要判断1块左边是否有空间,1块的右边是否有两个空间*/
         /*判断1块左边是否有空间*/
         x_index = block->x[0];
         y_index = block->y[0];
@@ -2958,32 +4536,26 @@ static void lv_block_game_switch_style_7_state(Block_t *block)
             break;
         }
 
-        /*判断1块右边的右边是否有空间*/
-        if(x_index == max_x)/*1块就再最右边了*/
-        {
-            break;
-        }
-        x_index += 1;
-        if(x_index == max_x)/*1块的右边在最右边了*/
+        /*判断1块右边是否有两个空间*/
+        if(x_index + 2 > max_x)
         {
             break;
         }
         /*判断1块右边的右边是否有空间*/
-        if(g_pt_lv_blockgame->block[x_index + 1][y_index].is_fill == IS_FILL)/*没空间*/
+        if(g_pt_lv_blockgame->block[x_index + 2][y_index].is_fill == IS_FILL)/*没空间*/
         {
             break;
         }
         /*判断1块的右边是否有空间*/
-        if(g_pt_lv_blockgame->block[x_index][y_index].is_fill == IS_FILL)/*没空间*/
+        if(g_pt_lv_blockgame->block[x_index + 1][y_index].is_fill == IS_FILL)/*没空间*/
         {
             break;
         }
-
         block->state = STATE_1;
-
+        lv_block_game_set_style_7_state(block);
         break;
     }
-    lv_block_game_set_style_7_state(block);
+
 }
 
 /* event_handler_back_to_home
