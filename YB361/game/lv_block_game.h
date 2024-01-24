@@ -23,6 +23,7 @@ typedef enum
 {
     RT_OK = 0,          /*成功返回不需操作*/
     RT_NEED_NEW,        /*表示一个块不能移动了,需要创建新块*/
+    RT_FAIL,
 }RT_TYPE;
 
 

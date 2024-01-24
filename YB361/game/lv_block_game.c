@@ -100,6 +100,7 @@ static void event_handler_left_move(lv_event_t *e);
 static void event_handler_right_move(lv_event_t *e);
 static void event_handler_switch_state(lv_event_t *e);
 
+static void lv_block_game_new_the_block(void);
 
 /* lv_block_game
  * 俄罗斯方块游戏
@@ -189,8 +190,9 @@ static void lv_block_game_init(void)
     lv_obj_set_style_text_font(label, &lv_font_montserrat_32, 0);
     lv_label_set_text(label, LV_SYMBOL_LEFT);
     lv_obj_center(label);
+    //lv_obj_add_flag(btn, LV_OBJ_FLAG_CLICKABLE);/*允许点击*/
+    //lv_obj_add_event_cb(btn, event_handler_left_move, LV_EVENT_PRESSING , NULL);
     lv_obj_add_event_cb(btn, event_handler_left_move, LV_EVENT_CLICKED, NULL);
-
 
     /*创建右按钮*/
     g_pt_lv_blockgame->right_btn = lv_btn_create(g_pt_lv_blockgame->bg_about);
@@ -204,7 +206,7 @@ static void lv_block_game_init(void)
     lv_label_set_text(label, LV_SYMBOL_RIGHT);
     lv_obj_center(label);
     lv_obj_add_event_cb(btn, event_handler_right_move, LV_EVENT_CLICKED, NULL);
-
+    //lv_obj_add_event_cb(btn, event_handler_right_move, LV_EVENT_PRESSING, NULL);
     /*创建切换按钮*/
     g_pt_lv_blockgame->switch_btn = lv_btn_create(g_pt_lv_blockgame->bg_about);
     btn = g_pt_lv_blockgame->switch_btn;
@@ -217,7 +219,7 @@ static void lv_block_game_init(void)
     lv_label_set_text(label, LV_SYMBOL_REFRESH);
     lv_obj_center(label);
     lv_obj_add_event_cb(btn, event_handler_switch_state, LV_EVENT_CLICKED, NULL);
-
+    //lv_obj_add_event_cb(btn, event_handler_switch_state, LV_EVENT_PRESSING, NULL);
 
 
     //lv_block_game_create_border();
@@ -227,7 +229,8 @@ static void lv_block_game_init(void)
     lv_block_game_reset_current_block();
 
     /*创建1个方块*/
-    lv_block_game_new_block(&current_block, STYLE_1, RED_HEX);
+    //lv_block_game_new_block(&current_block, STYLE_1, RED_HEX);
+    lv_block_game_new_the_block();
 
     lv_block_game_switch_block_state(&current_block);
 
@@ -367,11 +370,14 @@ static void lv_block_game_new_block(Block_t *block, uint8_t block_type, uint32_t
 
 static void lv_block_game_new_the_block(void)
 {
+    #if 1
     /*随机颜色*/
     /*设置随机数种子*/
     srand((unsigned)time(NULL));
-    int color_type = rand() % BLOCK_RANGE;
-    int style_type = rand() % STYLE_LAST;
+    //int color_type = rand() % BLOCK_RANGE;
+    //int style_type = rand() % (STYLE_LAST);
+    static int color_type = 0;
+    static int style_type = 0;
     uint32_t color = RED_COLOR_HEX;
     switch(color_type)
     {
@@ -399,6 +405,19 @@ static void lv_block_game_new_the_block(void)
     }
 
     lv_block_game_new_block(&current_block, style_type, color);
+    color_type++;
+    style_type++;
+    if(color_type > BLOCK_RANGE)
+    {
+        color_type = 0;
+    }
+    if(style_type > STYLE_7)
+    {
+        style_type = 0;
+    }
+    #else
+    lv_block_game_new_block(&current_block, STYLE_7, RED_COLOR_HEX);
+    #endif
 }
 
 /* lv_block_game_restart
@@ -474,6 +493,7 @@ static void lv_block_game_switch_block_state(Block_t *block)
         lv_block_game_switch_style_6_state(block);
         break;
     case STYLE_7:
+        printf("switch stle-7\r\n");
         lv_block_game_switch_style_7_state(block);
         break;
     }
@@ -840,7 +860,7 @@ static int lv_block_game_move_style_1_block_down(Block_t *block)
         }
         if(g_pt_lv_blockgame->block[x_index][y_index + 1].is_fill == IS_FILL)/*已经被填充不能下移了*/
         {
-            return;
+            return RT_NEED_NEW;
         }
         /*再判断1块*/
         x_index = block->x[0];
@@ -1300,7 +1320,7 @@ static int lv_block_game_move_style_2_block_down(Block_t *block)
     {
         block->y[i] += 1;
     }
-
+    return RT_OK;
 }
 
 
@@ -1712,7 +1732,7 @@ static int lv_block_game_move_style_3_block_down(Block_t *block)
     {
         block->y[i] += 1;
     }
-
+    return RT_OK;
 }
 
 /* lv_block_game_move_style_4_block_left
@@ -2123,7 +2143,7 @@ static int lv_block_game_move_style_4_block_down(Block_t *block)
     {
         block->y[i] += 1;
     }
-
+    return RT_OK;
 }
 
 /* lv_block_game_move_style_5_block_left
@@ -2534,7 +2554,7 @@ static int lv_block_game_move_style_5_block_down(Block_t *block)
     {
         block->y[i] += 1;
     }
-
+    return RT_OK;
 }
 
 /* lv_block_game_move_style_6_block_left
@@ -2689,7 +2709,7 @@ static int lv_block_game_move_style_6_block_down(Block_t *block)
     {
         block->y[i] += 1;
     }
-
+    return RT_OK;
 }
 
 /* lv_block_game_move_style_7_block_left
@@ -2760,13 +2780,13 @@ static void lv_block_game_move_style_7_block_left(Block_t *block)
         }
         break;
     case STATE_3:
-        /*2块在1块的右边*/
-        /*3块在2块的右边*/
-        /*4块在块1的左边*/
-        /*需要判断4块左边是否有空间*/
-        /*先判断4块*/
-        x_index = block->x[3];
-        y_index = block->y[3];
+        /*2块在1块的左边*/
+        /*3块在2块的左边*/
+        /*4块在块1的右边*/
+        /*需要判断3块左边是否有空间*/
+        /*先判断3块*/
+        x_index = block->x[2];
+        y_index = block->y[2];
         if(x_index == 0)/*不能移动*/
         {
             return;
@@ -2777,9 +2797,9 @@ static void lv_block_game_move_style_7_block_left(Block_t *block)
         }
         break;
     case STATE_4:
-        /*2块在1块的下边*/
-        /*3块在2块的下边*/
-        /*4块在块1的上边*/
+        /*2块在1块的上边*/
+        /*3块在2块的上边*/
+        /*4块在块1的下边*/
         /*需要判断4块左边,1块左边是否有空间,2块,3块左边是否有空间*/
         /*先判断4块*/
         x_index = block->x[3];
@@ -2895,13 +2915,13 @@ static void lv_block_game_move_style_7_block_right(Block_t *block)
         }
         break;
     case STATE_3:
-        /*2块在1块的右边*/
-        /*3块在2块的右边*/
-        /*4块在块1的左边*/
-        /*需要判3块右边是否有空间*/
-        /*先判断3块*/
-        x_index = block->x[2];
-        y_index = block->y[2];
+        /*2块在1块的左边*/
+        /*3块在2块的左边*/
+        /*4块在块1的右边*/
+        /*需要判4块右边是否有空间*/
+        /*先判断4块*/
+        x_index = block->x[3];
+        y_index = block->y[3];
         if(x_index == max_x)/*不能移动*/
         {
             return;
@@ -2912,9 +2932,9 @@ static void lv_block_game_move_style_7_block_right(Block_t *block)
         }
         break;
     case STATE_4:
-        /*2块在1块的下边*/
-        /*3块在2块的下边*/
-        /*4块在块1的上边*/
+        /*2块在1块的上边*/
+        /*3块在2块的上边*/
+        /*4块在块1的下边*/
         /*需要判断4块右边是否有空间,1块,2块右边是否有空间,3块右边*/
         /*先判断4块*/
         x_index = block->x[3];
@@ -3033,9 +3053,9 @@ static int lv_block_game_move_style_7_block_down(Block_t *block)
         }
         break;
     case STATE_3:
-        /*2块在1块的右边*/
-        /*3块在2块的右边*/
-        /*4块在块1的左边*/
+        /*2块在1块的左边*/
+        /*3块在2块的左边*/
+        /*4块在块1的右边*/
         /*需要判4块下边是否有空间,1块下边是否有空间,2块,3块下边*/
         /*先判断4块*/
         x_index = block->x[3];
@@ -3073,13 +3093,13 @@ static int lv_block_game_move_style_7_block_down(Block_t *block)
         }
         break;
     case STATE_4:
-        /*2块在1块的下边*/
-        /*3块在2块的下边*/
-        /*4块在块1的上边*/
+        /*2块在1块的上边*/
+        /*3块在2块的上边*/
+        /*4块在块1的下边*/
         /*需要判3块下边是否有空间*/
-        /*先判断3块*/
-        x_index = block->x[2];
-        y_index = block->y[2];
+        /*先判断4块*/
+        x_index = block->x[3];
+        y_index = block->y[3];
         if(y_index == max_y)/*不能移动*/
         {
             /*y最大表示当前块碰壁了*/
@@ -3098,7 +3118,7 @@ static int lv_block_game_move_style_7_block_down(Block_t *block)
     {
         block->y[i] += 1;
     }
-
+    return RT_OK;
 }
 
 /* lv_block_game_move_block_left
@@ -3204,8 +3224,9 @@ static int lv_block_game_check_row_and_clear(uint8_t row)
             /*重新改变改行的颜色*/
             lv_obj_set_style_bg_color(g_pt_lv_blockgame->block[j][0].obj, lv_color_hex(g_pt_lv_blockgame->block[j][0].color), 0);
         }
-
+        return RT_OK;/*满了*/
     }
+    return RT_FAIL;/*该行没满*/
 }
 
 /* lv_block_game_check_row_full
@@ -3239,9 +3260,17 @@ static void lv_block_game_check_row_full(Block_t *block)
     }
     printf("top_y = %d\r\n", top_y);
     /*找到最低的碰撞点, 然后一直网上遍历*/
-    for(i = max_y; i >= top_y; i--)
+    for(i = max_y; i >= top_y;)
     {
-        lv_block_game_check_row_and_clear(i);
+        if(lv_block_game_check_row_and_clear(i) == RT_OK)/*该行满了*/
+        {
+            /*继续判断该行*/
+            //sleep(1);
+        }
+        else
+        {
+                i--;
+        }
     }
 
 
@@ -3256,11 +3285,11 @@ static void lv_block_game_move_block_down(Block_t *block)
 {
     int nRet;
     int i;
-    int j;
+    //int j;
     uint8_t x_index;
     uint8_t y_index;
-    uint8_t max_y;
-    max_y = LV_BLOCK_GAME_VALID_CONT_H/LV_BLOCK_GAME_BASE_CONT_SIZE - 1;
+    //uint8_t max_y;
+    //max_y = LV_BLOCK_GAME_VALID_CONT_H/LV_BLOCK_GAME_BASE_CONT_SIZE - 1;
     switch(block->type)
     {
     case STYLE_1:
@@ -4366,6 +4395,7 @@ static void lv_block_game_set_style_7_state(Block_t *block)
         lv_block_game_align(3, 2, block->x, block->y, BL_ALIGN_RIGHT);
         /*4块在块1的左边*/
         lv_block_game_align(4, 1, block->x, block->y, BL_ALIGN_LEFT);
+        break;
     case STATE_2:
         /*2块在1块的下边*/
         lv_block_game_align(2, 1, block->x, block->y, BL_ALIGN_BOTTOM);
@@ -4373,20 +4403,22 @@ static void lv_block_game_set_style_7_state(Block_t *block)
         lv_block_game_align(3, 2, block->x, block->y, BL_ALIGN_BOTTOM);
         /*4块在块1的上边*/
         lv_block_game_align(4, 1, block->x, block->y, BL_ALIGN_TOP);
+        break;
     case STATE_3:
-        /*2块在1块的右边*/
-        lv_block_game_align(2, 1, block->x, block->y, BL_ALIGN_RIGHT);
-        /*3块在2块的右边*/
-        lv_block_game_align(3, 2, block->x, block->y, BL_ALIGN_RIGHT);
-        /*4块在块1的左边*/
-        lv_block_game_align(4, 1, block->x, block->y, BL_ALIGN_LEFT);
+        /*2块在1块的左边*/
+        lv_block_game_align(2, 1, block->x, block->y, BL_ALIGN_LEFT);
+        /*3块在2块的左边*/
+        lv_block_game_align(3, 2, block->x, block->y, BL_ALIGN_LEFT);
+        /*4块在块1的右边*/
+        lv_block_game_align(4, 1, block->x, block->y, BL_ALIGN_RIGHT);
+        break;
     case STATE_4:
-        /*2块在1块的下边*/
-        lv_block_game_align(2, 1, block->x, block->y, BL_ALIGN_BOTTOM);
-        /*3块在2块的下边*/
-        lv_block_game_align(3, 2, block->x, block->y, BL_ALIGN_BOTTOM);
-        /*4块在块1的上边*/
-        lv_block_game_align(4, 1, block->x, block->y, BL_ALIGN_TOP);
+        /*2块在1块的上边*/
+        lv_block_game_align(2, 1, block->x, block->y, BL_ALIGN_TOP);
+        /*3块在2块的上边*/
+        lv_block_game_align(3, 2, block->x, block->y, BL_ALIGN_TOP);
+        /*4块在块1的下边*/
+        lv_block_game_align(4, 1, block->x, block->y, BL_ALIGN_BOTTOM);
         break;
     }
 }
@@ -4398,7 +4430,7 @@ static void lv_block_game_create_style_7_block(Block_t *block, uint32_t color)
 {
 
     block->type = STYLE_7;/*当前块的类型*/
-    block->state = STATE_1;
+    block->state = STATE_2;/*初始状态为2*/
     block->color = color;
     block->x[0] = LV_BLOCK_GAME_START_X_INDEX;
     block->y[0] = LV_BLOCK_GAME_START_Y_INDEX;
@@ -4422,7 +4454,6 @@ static void lv_block_game_switch_style_7_state(Block_t *block)
     switch(state)
     {
     case STATE_1:
-
         /*1状态切换到2状态需要判断右边是否有空间*/
         /*需要判断1块上边是否有一个空间 1块下边是否有2个空间*/
         /*判断1块上边是否有1个空间*/
@@ -4439,7 +4470,7 @@ static void lv_block_game_switch_style_7_state(Block_t *block)
         /*判断1块下边的是否有两个空间*/
         x_index = block->x[0];
         y_index = block->y[0];
-        if(y_index + 2 > max_y)/*没有两个空*/
+        if((y_index + 2) > max_y)/*没有两个空*/
         {
             break;
         }
@@ -4457,31 +4488,31 @@ static void lv_block_game_switch_style_7_state(Block_t *block)
         break;
     case STATE_2:
         /*2状态切换到3状态需要判断右边是否有空间*/
-        /*需要判断1块左边是否有空间,1块的右边是否有两个空间*/
-        /*判断1块左边是否有空间*/
+        /*需要判断1块右边是否有空间,1块的左边是否有两个空间*/
+        /*判断1块右边是否有空间*/
         x_index = block->x[0];
         y_index = block->y[0];
-        if(x_index == 0)
+        if(x_index == max_x)
         {
             break;
         }
-        if(g_pt_lv_blockgame->block[x_index - 1][y_index].is_fill == IS_FILL)/*没空间*/
+        if(g_pt_lv_blockgame->block[x_index + 1][y_index].is_fill == IS_FILL)/*没空间*/
         {
             break;
         }
 
-        /*判断1块右边是否有两个空间*/
-        if(x_index + 2 > max_x)
+        /*判断1块左边是否有两个空间*/
+        if(x_index < 2)
         {
             break;
         }
-        /*判断1块右边的右边是否有空间*/
-        if(g_pt_lv_blockgame->block[x_index + 2][y_index].is_fill == IS_FILL)/*没空间*/
+        /*判断1块左边的左边是否有空间*/
+        if(g_pt_lv_blockgame->block[x_index - 2][y_index].is_fill == IS_FILL)/*没空间*/
         {
             break;
         }
-        /*判断1块的右边是否有空间*/
-        if(g_pt_lv_blockgame->block[x_index + 1][y_index].is_fill == IS_FILL)/*没空间*/
+        /*判断1块的左边是否有空间*/
+        if(g_pt_lv_blockgame->block[x_index - 1][y_index].is_fill == IS_FILL)/*没空间*/
         {
             break;
         }
@@ -4490,30 +4521,30 @@ static void lv_block_game_switch_style_7_state(Block_t *block)
         break;
     case STATE_3:
         /*3状态切换到4状态需要判断1块下边是否有空间*/
-        /*需要判断1块上边是否有一个空间 1块下边是否有2个空间*/
-        /*判断1块上边是否有1个空间*/
+        /*需要判断1块下边是否有一个空间 1块上边是否有2个空间*/
+        /*判断1块上边是否有2个空间*/
         x_index = block->x[0];
         y_index = block->y[0];
-        if(y_index != 0)
+        if(y_index >= 2)
         {
             if(g_pt_lv_blockgame->block[x_index][y_index - 1].is_fill == IS_FILL)/*没空间*/
             {
                 break;
             }
+            if(g_pt_lv_blockgame->block[x_index][y_index - 2].is_fill == IS_FILL)/*没空间*/
+            {
+                break;
+            }
         }
 
-        /*判断1块下边的是否有两个空间*/
+        /*判断1块下边的是否有1个空间*/
         x_index = block->x[0];
         y_index = block->y[0];
-        if(y_index + 2 > max_y)/*没有两个空*/
+        if(y_index + 1 > max_y)/*没有1个空*/
         {
             break;
         }
 
-        if(g_pt_lv_blockgame->block[x_index][y_index + 2].is_fill == IS_FILL)/*没空间*/
-        {
-            break;
-        }
         if(g_pt_lv_blockgame->block[x_index][y_index + 1].is_fill == IS_FILL)/*没空间*/
         {
             break;
@@ -4589,6 +4620,11 @@ static void event_handler_left_move(lv_event_t *e)
         /*左移*/
         lv_block_game_move_block_left(&current_block);
 	}
+	if(code == LV_EVENT_PRESSING)
+    {
+        /*左移*/
+        lv_block_game_move_block_left(&current_block);
+    }
 }
 
 /* event_handler_right_move
@@ -4599,6 +4635,11 @@ static void event_handler_right_move(lv_event_t *e)
 	lv_event_code_t code = lv_event_get_code(e);
 	//lv_obj_t *obj = lv_event_get_current_target(e);
 	if(code == LV_EVENT_CLICKED)/*点击*/
+	{
+        /*右移*/
+        lv_block_game_move_block_right(&current_block);
+	}
+	if(code == LV_EVENT_PRESSING)/*点击*/
 	{
         /*右移*/
         lv_block_game_move_block_right(&current_block);
@@ -4617,4 +4658,5 @@ static void event_handler_switch_state(lv_event_t *e)
         /*切换状态*/
         lv_block_game_switch_block_state(&current_block);
 	}
+
 }
