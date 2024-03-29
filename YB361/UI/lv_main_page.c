@@ -15,7 +15,7 @@
 #include "lv_record_page.h"
 #include "lv_snake_page.h"
 #include "lv_music_page.h"
-
+#include "UI/filesys_page.h"
 /*size*/
 #define LV_BOTTOM_MENU_W				(LV_HOR_RES)
 #define LV_BOTTOM_MENU_H				(76)
@@ -437,7 +437,8 @@ static void event_handler_stm32_demo_tools_file_browser(lv_event_t *e)
 	{
 		tabview_desktop_id = lv_tabview_get_tab_act(tabview_desktop);
 		lv_obj_del(tabview_desktop);
-		lv_dev_info();
+		file_sys_page();
+		//lv_dev_info();
 	}
 }
 

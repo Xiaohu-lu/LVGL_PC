@@ -5,6 +5,15 @@ Dev_param_t gdev_param;
 
 int dev_info_cont = 20;/*初始申请个数*/
 int dev_record_cont = 20;
+
+uint32_t xTaskGetTickCount(void)
+{
+    time_t current_time = time(NULL);
+    return (uint32_t)current_time;
+
+}
+
+
 /* param_init
  * 全局参数初始化
  */

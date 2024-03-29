@@ -15,8 +15,7 @@
 
 static PT_lv_about g_pt_lv_about;		/*数据结构体*/
 
-
-
+extern void SetDispRotain(uint8_t rotain);
 
 static void lv_boart_about_init(void);
 static void event_handler_back_to_home(lv_event_t *e);
@@ -29,8 +28,11 @@ void lv_board_about(void)
 	g_pt_lv_about = (T_lv_about*)pvPortMalloc(sizeof(T_lv_about));
 	g_pt_lv_about->bg_about = lv_obj_create(lv_scr_act());/*创建背景*/
 
+	//lv_disp_set_rotation(NULL, LV_DISP_ROT_90);
+SetDispRotain(1);
 	//lv_obj_clear_flag(g_pt_lv_about->bg_about, LV_OBJ_FLAG_SCROLLABLE);
 	lv_obj_set_size(g_pt_lv_about->bg_about, LV_HOR_RES, LV_VER_RES);/*设置大小*/
+	//lv_obj_set_size(g_pt_lv_about->bg_about, LV_VER_RES, LV_HOR_RES);/*设置大小*/
 	lv_obj_set_style_radius(g_pt_lv_about->bg_about, 0, 0);/*设置圆角*/
 	//lv_obj_set_x(g_pt_lv_about->bg_about, 0);/*设置x坐标*/
 	//lv_obj_set_y(g_pt_lv_about->bg_about, 0);/*设置y坐标*/
@@ -160,7 +162,8 @@ static void event_handler_back_to_home(lv_event_t *e)
 		if(g_pt_lv_about->bg_about != NULL) lv_obj_del(g_pt_lv_about->bg_about);
 
 		vPortFree(g_pt_lv_about);
-
+        //lv_disp_set_rotation(NULL, LV_DISP_ROT_NONE);
+        SetDispRotain(0);
 		lv_main_page_demo_home(100);
 	}
 }

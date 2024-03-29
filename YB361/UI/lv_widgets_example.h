@@ -38,4 +38,8 @@ void lv_example_tabview_2(void);
 
 void lv_example_roller_1(void);
 void lv_example_roller_2(void);
+
+
+void anim_show_2(void);
+
 #endif /* LV_WIDGETS_EXAMPLE_H_ */

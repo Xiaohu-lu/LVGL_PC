@@ -42,7 +42,28 @@
 			<Add option="-Wall" />
 			<Add directory="." />
 		</Compiler>
+		<Unit filename="Lv_ui/Gatlingpea.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Lv_ui/Gatlingpeamenu.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Lv_ui/SeedBank.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Lv_ui/Sun2.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Lv_ui/Sun3.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Lv_ui/SunBank.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="Lv_ui/aixin.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Lv_ui/background1.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="Lv_ui/hutao.c">
@@ -96,9 +117,25 @@
 		<Unit filename="Lv_ui/img_lv_100ask_icon_widgets.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="Lv_ui/pea.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Lv_ui/shovel.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Lv_ui/sunflower.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Lv_ui/sunflowermenu.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="Lv_ui/waitting.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="UI/filesys_page.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="UI/filesys_page.h" />
 		<Unit filename="UI/lv_about_page.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -163,6 +200,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="UI/lv_widgets_example.h" />
+		<Unit filename="UI/plantsgame.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="UI/plantsgame.h" />
 		<Unit filename="game/lv_block_game.c">
 			<Option compilerVar="CC" />
 		</Unit>

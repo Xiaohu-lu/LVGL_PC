@@ -98,6 +98,6 @@ extern Dev_param_t gdev_param;
 
 void param_init(void);
 
-
+uint32_t xTaskGetTickCount(void);
 void add_some_data(void);
 #endif

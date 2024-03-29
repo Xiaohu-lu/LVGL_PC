@@ -951,7 +951,7 @@ static void anim_size_cb(void *var,int32_t v)
  *  参    数 ： 无
  *  函数功能 ： 按键联动，实现Label动画显示
  *************************************************/
-void anim_show_2()
+void anim_show_2(void)
 {
    lv_obj_t * obj = lv_obj_create(lv_scr_act());      //创建一个对象
    lv_obj_set_style_bg_color(obj,lv_palette_main(LV_PALETTE_RED),0); //设置背景颜色
@@ -1025,3 +1025,73 @@ void anim_show_1()
    lv_obj_add_event_cb(sw,sw_event_cb,LV_EVENT_VALUE_CHANGED,label); //添加回调函数
 }
 
+void anim_spin_test1(void)
+{
+    LV_IMG_DECLARE(Sun2);
+    lv_obj_t *img_revolve = lv_img_create(lv_scr_act());
+    lv_img_set_src(img_revolve, &Sun2);
+    lv_obj_align(img_revolve, LV_ALIGN_CENTER, 0, 0);
+
+    /*创建旋转动画效果*/
+    lv_anim_t anim_img;
+    lv_anim_init(&anim_img);
+    lv_anim_set_var(&anim_img, img_revolve);
+
+    /*设置动画参数*/
+    lv_anim_set_exec_cb(&anim_img, (lv_anim_exec_xcb_t)lv_img_set_angle);
+    lv_anim_set_time(&anim_img, 900);
+    lv_anim_set_values(&anim_img, 0, 3600-1);
+    lv_anim_set_repeat_count(&anim_img, LV_ANIM_REPEAT_INFINITE);/*无限触发*/
+    /*设置动画路径*/
+    lv_anim_set_path_cb(&anim_img, lv_anim_path_ease_in_out);
+    /*开始动画*/
+    lv_anim_start(&anim_img);
+}
+
+static void sun_anim_x_cb(void *var, int32_t v)
+{
+    lv_obj_set_x(var, v);
+    printf("ste x %d\r\n", v);
+}
+
+static void sun_anim_y_cb(void *var, int32_t v)
+{
+    lv_obj_set_y(var, v);
+    printf("ste y %d\r\n", v);
+}
+
+static void sun_anim_size_cb(void *var, int32_t v)
+{
+
+    lv_obj_set_size(var, v, v);
+}
+
+void anim_sun_test1(void)
+{
+    LV_IMG_DECLARE(Sun2);
+    /*创建图片*/
+    lv_obj_t *img = lv_img_create(lv_scr_act());
+    /*设置图像位置*/
+    lv_obj_set_pos(img, 200, 40);
+    lv_img_set_src(img, &Sun2);
+    /*创建动画样式*/
+    lv_anim_t anim_sun;
+    lv_anim_init(&anim_sun);
+    lv_anim_set_var(&anim_sun, img);
+    lv_anim_set_values(&anim_sun, 40, 40);
+    lv_anim_set_time(&anim_sun, 2000);
+    lv_anim_set_playback_delay(&anim_sun, 1000);
+    lv_anim_set_playback_time(&anim_sun, 0);
+    lv_anim_set_repeat_delay(&anim_sun, 800);
+    lv_anim_set_repeat_count(&anim_sun, 1);
+    lv_anim_set_path_cb(&anim_sun, lv_anim_path_ease_in_out);
+
+    //lv_anim_set_exec_cb(&anim_sun, sun_anim_size_cb);
+    //lv_anim_start(&anim_sun);
+    lv_anim_set_exec_cb(&anim_sun, sun_anim_x_cb);
+    lv_anim_set_values(&anim_sun, 200, 210);
+    lv_anim_start(&anim_sun);
+    lv_anim_set_exec_cb(&anim_sun, sun_anim_y_cb);
+    lv_anim_set_values(&anim_sun, 40, 280);
+    lv_anim_start(&anim_sun);
+}

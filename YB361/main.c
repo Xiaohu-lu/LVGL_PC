@@ -36,11 +36,23 @@ static int tick_thread(void *data);
 /**********************
  *  STATIC VARIABLES
  **********************/
-
+HINSTANCE ghInstance;
 /**********************
  *      MACROS
  **********************/
 
+void SetDispRotain(uint8_t rotain)
+{
+    if(rotain == 1)
+    {
+
+        lv_win32_init(ghInstance, SW_SHOWNORMAL, 480, 320, NULL);
+    }
+    else
+    {
+        lv_win32_init(ghInstance, SW_SHOWNORMAL, 320, 480, NULL);
+    }
+}
 /**********************
  *   GLOBAL FUNCTIONS
  **********************/
@@ -51,8 +63,10 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR szCmdLi
     lv_init();
 
     /*Initialize the HAL for LittlevGL*/
-    lv_win32_init(hInstance, SW_SHOWNORMAL, 320, 480, NULL);
-
+    lv_win32_init(hInstance, SW_SHOWNORMAL, 480, 320, NULL);
+    printf("hInstance size = %d,\r\n", sizeof(hInstance));
+    ghInstance = hInstance;
+    printf("hInstanc = %x, ghInstance = %x\r\n", hInstance, ghInstance);
     /*Output prompt information to the console, you can also use printf() to print directly*/
     LV_LOG_USER("LVGL initialization completed!");
     //printf("www.100ask.net: Lvgl initialization complete!\n");
@@ -61,17 +75,22 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR szCmdLi
     add_some_data();
     //anim_show_1();
     //anim_show_2();
-    lv_main_page_demo(1000);
+    //lv_main_page_demo(1000);
 
     //lv_example_table_2();
     //lv_example_roller_1();
     //lv_gif_example_1();
     //lv_wait_ainmation(2000);
+    lv_plant_game();
+    //anim_sun_test1();
+    //anim_show_2();
+    //anim_show_1();
     while(!lv_win32_quit_signal) {
         /* Periodically call the lv_task handler.
          * It could be done in a timer interrupt or an OS task too.*/
         lv_task_handler();
         usleep(10000);       /*Just to let the system breath*/
     }
+    while(1);
     return 0;
 }

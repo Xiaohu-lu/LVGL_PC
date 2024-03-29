@@ -74,6 +74,8 @@ void lv_wait_ainmation(uint32_t delay)
     LV_IMG_DECLARE(waitting);
     LV_IMG_DECLARE(aixin);
     LV_IMG_DECLARE(hutao);
+
+    LV_IMG_DECLARE(img_lv_100ask_bg);
     /*创建背景*/
     bg = lv_obj_create(lv_scr_act());
     lv_obj_set_size(bg, LV_HOR_RES, LV_VER_RES);/*设置大小*/

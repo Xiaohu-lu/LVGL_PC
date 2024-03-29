@@ -13,6 +13,14 @@
 
 #define LV_MUSIC_PLAYER_LIST_HIGHT              (LV_VER_RES - (LV_VER_RES / 3))
 
+
+#define BOTTOM_CON_H                            60
+#define BOTTOM_CON_W                            300
+#define CTL_SIZE                                40
+
+#define SLIDER_CON_W                            40
+#define SLIDER_CON_H                            180
+
 typedef struct _lv_100ask_music_player {
 	lv_obj_t  * bg_music_player;      		/* 背景 */
 	lv_obj_t  * current_btn;				/* 记录当前播放的索引 */

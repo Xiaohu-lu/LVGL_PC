@@ -339,6 +339,7 @@ EXTERN_C bool lv_win32_init(
     lv_disp_drv_init(&display_driver);
     display_driver.hor_res = hor_res;
     display_driver.ver_res = ver_res;
+    display_driver.sw_rotate = 1;/**modify**/
     display_driver.flush_cb = lv_win32_display_driver_flush_callback;
     display_driver.draw_buf = &display_buffer;
     display_driver.rounder_cb = lv_win32_display_driver_rounder_callback;
@@ -418,7 +419,7 @@ static HDC lv_win32_create_frame_buffer(
 #else
             BITMAPINFO BitmapInfo = { 0 };
 #endif
-            
+
             BitmapInfo.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
             BitmapInfo.bmiHeader.biWidth = Width;
             BitmapInfo.bmiHeader.biHeight = -Height;
@@ -483,7 +484,7 @@ static HDC lv_win32_create_frame_buffer(
 #else
                 *PixelBufferSize = Width * Height * sizeof(UINT32);
 #endif
-             
+
                 DeleteObject(SelectObject(hFrameBufferDC, hBitmap));
                 DeleteObject(hBitmap);
             }
@@ -500,7 +501,7 @@ static HDC lv_win32_create_frame_buffer(
 
 static BOOL lv_win32_enable_child_window_dpi_message(
     HWND WindowHandle)
-{ 
+{
     // This hack is only for Windows 10 TH1/TH2 only.
     // We don't need this hack if the Per Monitor Aware V2 is existed.
     OSVERSIONINFOEXW OSVersionInfoEx = { 0 };
