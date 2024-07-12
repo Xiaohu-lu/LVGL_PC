@@ -132,6 +132,9 @@
 		<Unit filename="Lv_ui/waitting.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="Lv_ui/zombie.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="UI/filesys_page.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -204,6 +207,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="UI/plantsgame.h" />
+		<Unit filename="game/gomoku.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="game/gomoku.h" />
 		<Unit filename="game/lv_block_game.c">
 			<Option compilerVar="CC" />
 		</Unit>

@@ -11,6 +11,13 @@ Sun_event_t gSun_event_head;            /*系统产生的阳光*/
 SunFlower_event_t gSunflower_event_head;  /*太阳花产生的阳光*/
 Gatlingpea_t gGat_event_head;           /*豌豆射手*/
 
+All_Sun_Info_t gAll_Sun_Info;
+
+Pea_Obj_Info_t gFree_Pea;       /*空闲豌豆链表*/
+Manage_pea_t gManage_pea_head[5];  /*管理创建豌豆链表*/
+Pea_Info_t gPea_Info_head[5];      /*豌豆子弹信息*/
+Zom_Info_t gZom_Info_head[5];       /*僵尸信息*/
+
 static lv_timer_t *gManageFlowertimer;
 
 uint32_t gTotal_sun = 100;
@@ -27,7 +34,10 @@ static void event_handler_menu_shovelclicked(lv_event_t *e);
 static void event_handler_menu_gatlclicked(lv_event_t *e);
 static void sun_anim_y_cb(void *var, int32_t v);
 static void sun_anim_x_cb(void *var, int32_t v);
-
+static void CreateOneZom(uint8_t line, uint8_t blood);
+static void CreateOnePea(uint8_t block_id);
+static Pea_Info_t * DeleteOnePea(uint8_t line, Pea_Info_t *del_node);
+static void Shovel_the_plant(uint8_t block_id);
 
 LV_IMG_DECLARE(background1);
 LV_IMG_DECLARE(SeedBank);
@@ -40,6 +50,7 @@ LV_IMG_DECLARE(shovel);
 LV_IMG_DECLARE(pea);
 LV_IMG_DECLARE(Gatlingpea);
 LV_IMG_DECLARE(Gatlingpeamenu);
+LV_IMG_DECLARE(zombie);
 /* lv_plant_game
  * 植物大战僵尸游戏
  * */
@@ -80,9 +91,7 @@ static void CollectEventCb(lv_timer_t *timer)
             {
                 /*直接删除阳光*/
                 printf("del sun = %x\r\n", delnode->obj);
-                lv_obj_remove_event_cb(delnode->obj, event_handler_sunclicked);/*移除回调函数*/
-                lv_obj_del(delnode->obj);/*删除对象*/
-                //lv_obj_clean(delnode->obj);
+                lv_obj_add_flag(delnode->obj, LV_OBJ_FLAG_HIDDEN);/*隐藏对象*/
                 /*从链表中删除*/
                 temp->next = delnode->next;
 
@@ -99,10 +108,8 @@ static void CollectEventCb(lv_timer_t *timer)
             {
                 printf("del sun = %x\r\n", delnode->obj);
                 lv_anim_del(delnode->obj, NULL);/*删除动画*/
-                //lv_anim_del(delnode->obj, NULL);/*删除动画*/
-                lv_obj_remove_event_cb(delnode->obj, event_handler_sunclicked);/*移除回调函数*/
-                lv_obj_del(delnode->obj);/*删除对象*/
-                //lv_obj_clean(delnode->obj);
+                lv_obj_add_flag(delnode->obj, LV_OBJ_FLAG_HIDDEN);/*隐藏对象*/
+
                 /*从链表中删除*/
                 temp->next = delnode->next;
 
@@ -132,7 +139,8 @@ static void ManageSunFlowerEventCb(lv_timer_t *timer)
     SunFlower_event_t *delnode;
     delnode = temp->next;
     uint32_t cur_time = xTaskGetTickCount();
-
+    uint8_t i;
+    lv_obj_t *sum_img;
     while(delnode)
     {
         if(delnode->sun_state == WAIT_GEN)/*等待产生阳光*/
@@ -141,46 +149,39 @@ static void ManageSunFlowerEventCb(lv_timer_t *timer)
             {
                 delnode->gen_time = cur_time;       /*更新时间*/
                 delnode->sun_state = WAIT_CLICK;    /*等待点击*/
-                //delnode->obj = lv_img_create(g_pt_lv_plant->bg_sod[delnode->block_id]);
-                //delnode->obj = lv_img_create(g_pt_lv_plant->bg_about);
-                delnode->obj = lv_img_create(lv_scr_act());
-                lv_img_set_src(delnode->obj, &Sun2);
-                /*调整位置*/
-                if((delnode->block_id/9) == 0)
-                {
-                    lv_obj_set_pos(delnode->obj, 26+(delnode->block_id%9)*47 - 4, 45+(delnode->block_id/9)*47 + 14);
-                }
-                else if((delnode->block_id/9) == 1)
-                {
-                    lv_obj_set_pos(delnode->obj, 26+(delnode->block_id%9)*47 - 4, 45+(delnode->block_id/9)*47 + 14+3);
-                }
-                else if((delnode->block_id/9) == 2)
-                {
-                    lv_obj_set_pos(delnode->obj, 26+(delnode->block_id%9)*47 - 4, 45+(delnode->block_id/9)*47 + 14+3+4);
-                }
-                else if((delnode->block_id/9) == 3)
-                {
-                    lv_obj_set_pos(delnode->obj, 26+(delnode->block_id%9)*47 - 4, 45+(delnode->block_id/9)*47 + 14+3+4+5);
-                }
-                else if((delnode->block_id/9) == 4)
-                {
-                    lv_obj_set_pos(delnode->obj, 26+(delnode->block_id%9)*47 - 4, 45+(delnode->block_id/9)*47 + 14+3+4+5+6);
-                }
+                delnode->obj = gAll_Sun_Info.obj_sun[delnode->block_id];
 
-                /*添加可以点击标志*/
-                lv_obj_add_flag(delnode->obj, LV_OBJ_FLAG_CLICKABLE);/*允许点击*/
-                /*添加点击事件回调函数*/
-                lv_obj_add_event_cb(delnode->obj, event_handler_flowersunclicked, LV_EVENT_CLICKED, NULL);
-                LOG_D("sun flower create %x\r\n", delnode->obj);
+                sum_img = delnode->obj;
+                i = delnode->block_id;
+                /*重新设置位置*/
+                if((i/9) == 0)
+                {
+                    lv_obj_set_pos(sum_img, 26+(i%9)*47 - 4, 45+(i/9)*47 + 14);
+                }
+                else if((i/9) == 1)
+                {
+                    lv_obj_set_pos(sum_img, 26+(i%9)*47 - 4, 45+(i/9)*47 + 14+3);
+                }
+                else if((i/9) == 2)
+                {
+                    lv_obj_set_pos(sum_img, 26+(i%9)*47 - 4, 45+(i/9)*47 + 14+3+4);
+                }
+                else if((i/9) == 3)
+                {
+                    lv_obj_set_pos(sum_img, 26+(i%9)*47 - 4, 45+(i/9)*47 + 14+3+4+5);
+                }
+                else if((i/9) == 4)
+                {
+                    lv_obj_set_pos(sum_img, 26+(i%9)*47 - 4, 45+(i/9)*47 + 14+3+4+5+6);
+                }
+                lv_obj_clear_flag(delnode->obj, LV_OBJ_FLAG_HIDDEN);/*显示对象*/
             }
         }
         else if(delnode->sun_state == WAIT_CLICK)/*等待点击阳光*/
         {
             if(delnode->gen_time + SUN_FLOWER_EXI_TIME < cur_time)/*阳光持续时间到,删除阳光*/
             {
-                lv_obj_remove_event_cb(delnode->obj, event_handler_flowersunclicked);/*移除回调函数*/
-                lv_obj_del(delnode->obj);           /*删除阳光*/
-                //lv_obj_clean(delnode->obj);
+                lv_obj_add_flag(delnode->obj, LV_OBJ_FLAG_HIDDEN);/*隐藏对象*/
                 LOG_D("wait del %x\r\n", delnode->obj);
                 delnode->gen_time = cur_time;       /*更新时间*/
                 delnode->sun_state = WAIT_GEN;      /*等待点击*/
@@ -191,9 +192,7 @@ static void ManageSunFlowerEventCb(lv_timer_t *timer)
             if((lv_obj_get_x(delnode->obj) == COLLECT_SUN_X) && (lv_obj_get_y(delnode->obj) == COLLECT_SUN_Y))
             {
                 lv_anim_del(delnode->obj, NULL);/*删除动画*/
-                //lv_anim_del(delnode->obj, NULL);/*删除动画*/
-                lv_obj_remove_event_cb(delnode->obj, event_handler_flowersunclicked);/*移除回调函数*/
-                lv_obj_del(delnode->obj);   /*删除阳光*/
+                lv_obj_add_flag(delnode->obj, LV_OBJ_FLAG_HIDDEN);/*隐藏对象*/
                 //lv_obj_clean(delnode->obj);
                 LOG_D("click del %x\r\n", delnode->obj);
                 delnode->gen_time = cur_time;       /*更新时间*/
@@ -242,12 +241,456 @@ static void CollectSunEvent_init(void)
     /*太阳花产生的阳光*/
     gSunflower_event_head.next = NULL;
     /*创建一个管理太阳花的定时器*/
-    //gManageFlowertimer = lv_timer_create(ManageSunFlowerEventCb, 200, NULL);
+    gManageFlowertimer = lv_timer_create(ManageSunFlowerEventCb, 200, NULL);
 
     /*豌豆射手*/
     gGat_event_head.next = NULL;
     /*创建一个管理豌豆射手的定时器*/
     lv_timer_create(ManageGatEventCb, 200, NULL);
+
+    /*初始化所有阳光*/
+    uint8_t i;
+    lv_obj_t *sum_img;
+    for(i = 0; i < SUN_SHOW_MAX; i++)
+    {
+        //gAll_Sun_Info.sun_state[i] = SUN_STATE_FREE;/*空闲状态*/
+        gAll_Sun_Info.obj_sun[i] = lv_img_create(lv_scr_act());
+        sum_img = gAll_Sun_Info.obj_sun[i];
+        lv_img_set_src(sum_img, &Sun2);
+        /*调整位置*/
+        if(i < 45)
+        {
+            if((i/9) == 0)
+            {
+                lv_obj_set_pos(sum_img, 26+(i%9)*47 - 4, 45+(i/9)*47 + 14);
+            }
+            else if((i/9) == 1)
+            {
+                lv_obj_set_pos(sum_img, 26+(i%9)*47 - 4, 45+(i/9)*47 + 14+3);
+            }
+            else if((i/9) == 2)
+            {
+                lv_obj_set_pos(sum_img, 26+(i%9)*47 - 4, 45+(i/9)*47 + 14+3+4);
+            }
+            else if((i/9) == 3)
+            {
+                lv_obj_set_pos(sum_img, 26+(i%9)*47 - 4, 45+(i/9)*47 + 14+3+4+5);
+            }
+            else if((i/9) == 4)
+            {
+                lv_obj_set_pos(sum_img, 26+(i%9)*47 - 4, 45+(i/9)*47 + 14+3+4+5+6);
+            }
+        }
+        else
+        {
+            lv_obj_set_pos(sum_img, 0, 0);
+        }
+        /*隐藏对象*/
+        lv_obj_add_flag(sum_img, LV_OBJ_FLAG_HIDDEN);
+        /*添加可以点击标志*/
+        lv_obj_add_flag(sum_img, LV_OBJ_FLAG_CLICKABLE);/*允许点击*/
+        /*添加点击事件回调函数*/
+        lv_obj_add_event_cb(sum_img, event_handler_sunclicked, LV_EVENT_CLICKED, (void*)i);
+    }
+
+}
+
+/* ManagePeaEventCb
+ * 管理豌豆射手
+ */
+static void ManagePeaEventCb(lv_timer_t *timer)
+{
+    uint8_t i;
+    Pea_Info_t *temp;
+    Zom_Info_t *zom_temp;
+    for(i = 0; i < 5; i++)
+    {
+        temp = gPea_Info_head[i].next;
+        zom_temp = gZom_Info_head[i].next;/*找到第一个僵尸*/
+        while(temp)
+        {
+            if(zom_temp != NULL)
+            {
+                if(temp->state == CRASH_NEXT)
+                {
+                    /*删除该豌豆*/
+                    temp = DeleteOnePea(i, temp);
+                    /*僵尸碰撞次数++*/
+                    zom_temp->crash_count++;
+                }
+                else
+                {
+                    if(temp->x + PEA_SPEED_X > zom_temp->x)
+                    {
+                        temp->x = zom_temp->x - ZOM_SPPED_X;
+                        lv_obj_set_x(temp->pea, temp->x);
+                        temp->state = CRASH_NEXT;
+                    }
+                    else
+                    {
+                        temp->x += PEA_SPEED_X;
+                        lv_obj_set_x(temp->pea, temp->x);
+                    }
+                }
+            }
+            else
+            {
+                temp->x += PEA_SPEED_X;
+                lv_obj_set_x(temp->pea, temp->x);
+            }
+
+            temp = temp->next;
+        }
+    }
+
+}
+
+/* ManageMoveZom
+ * 管理移动僵尸
+ */
+static void ManageMoveZom(lv_timer_t *timer)
+{
+    uint8_t i;
+    uint8_t j;
+    uint8_t block_id;
+    Zom_Info_t *zom_temp;
+    Zom_Info_t *pre_temp;
+    for(i = 0; i < 5; i++)
+    {
+        pre_temp = &gZom_Info_head[i];
+        zom_temp = gZom_Info_head[i].next;
+        while(zom_temp)
+        {
+            /*判断僵尸血量*/
+            if(zom_temp->crash_count >= zom_temp->crash_max)/*需要删除掉*/
+            {
+                pre_temp->next = zom_temp->next;
+                /*删除僵尸*/
+                lv_obj_del(zom_temp->zom);
+                vPortFree(zom_temp);
+                /*停止产生豌豆*/
+                if(pre_temp->next == NULL)
+                {
+                    gManage_pea_head[i].state = MAN_STOP;
+                }
+                zom_temp = pre_temp;
+            }
+            else
+            {
+                /*判断当前位置是否有植物*/
+                for(j = 0; j < 9; j++)
+                {
+                    if(zom_temp->x <= (26 + j * 47))
+                    {
+                        printf("cur_blockid = %d\r\n", j);
+                        break;
+                    }
+                }
+                block_id = i * 9 + j;
+                if(g_pt_lv_plant->bg_sodstate[block_id] != PLANT_NONE)
+                {
+                    printf("cul_block id = %d, have plant\r\n");
+                    zom_temp->wait_count ++;
+                    if(zom_temp->wait_count > EAT_PLANT_COUNT)/*删除植物*/
+                    {
+                        zom_temp->wait_count = 0;
+                        Shovel_the_plant(block_id);
+                    }
+                }
+                else
+                {
+                    zom_temp->x -= ZOM_SPPED_X;
+                    lv_obj_set_x(zom_temp->zom, zom_temp->x);
+                }
+            }
+            pre_temp = zom_temp;
+            zom_temp = zom_temp->next;
+        }
+    }
+}
+
+static void ManageCreatePea(lv_timer_t *timer)
+{
+    uint8_t i;
+    uint32_t cur_time = xTaskGetTickCount();
+    Manage_pea_t *temp;
+
+    for(i = 0; i < 5; i++)
+    {
+        if(gManage_pea_head[i].state == MAN_START)/*有僵尸需要产生豌豆*/
+        {
+            temp = gManage_pea_head[i].next;
+            while(temp)
+            {
+                if(temp->need_gen == PEA_CAN_GEN)/*产生一个豌豆*/
+                {
+                    CreateOnePea(temp->id);
+                    temp->gen_time = cur_time;
+                    temp->need_gen = PEA_WAIT_GEN;
+                }
+                else/*等待产生豌豆*/
+                {
+                    if((temp->gen_time + PEA_GEN_TIME) < cur_time)
+                    {
+                        CreateOnePea(temp->id);
+                        temp->gen_time = cur_time;
+                    }
+                }
+                temp = temp->next;
+            }
+        }
+    }
+}
+
+/* Pea_List_Init
+ * 初始化豌豆子弹链表,
+ * 并初始化10个豌豆子弹
+ */
+static void Pea_List_Init(void)
+{
+    gFree_Pea.next = NULL;
+    gFree_Pea.cnt = 0;
+    /*先申请10个豌豆子弹*/
+    uint8_t i;
+    Pea_Obj_Info_t *  newNode = NULL;
+    Pea_Obj_Info_t *temp = &gFree_Pea;
+    for(i = 0; i < 10; i++)
+    {
+        newNode = (Pea_Obj_Info_t*)pvPortMalloc(sizeof(Pea_Obj_Info_t));
+        if(newNode == NULL)
+        {
+            LOG_D("not have enough space");
+            return;
+        }
+        newNode->next = NULL;
+        newNode->obj = lv_img_create(lv_scr_act());
+        lv_img_set_src(newNode->obj, &pea);
+        lv_obj_add_flag(newNode->obj, LV_OBJ_FLAG_HIDDEN);/*隐藏对象*/
+        temp->next = newNode;
+        gFree_Pea.cnt++;
+        temp = newNode;
+    }
+
+    /*初始化当前需要显示的豌豆子弹*/
+    for(i = 0; i < 5; i++)
+    {
+        gPea_Info_head[i].next = NULL;
+        /*初始化僵尸列表*/
+        gZom_Info_head[i].next = NULL;
+        /*管理发射豌豆的链表*/
+        gManage_pea_head[i].next = NULL;
+        gManage_pea_head[i].state = MAN_STOP;
+    }
+
+    /*创建一个管理豌豆射手的定时器*/
+    lv_timer_create(ManagePeaEventCb, 200, NULL);
+
+    /*创建一个产生豌豆射手的定时器*/
+    lv_timer_create(ManageCreatePea, 300, NULL);
+
+
+    lv_timer_create(ManageMoveZom, 400, NULL);
+}
+
+/* AddGatPeaToList
+ * 添加豌豆射手信息到链表中
+ */
+static void AddGatPeaToList(uint8_t id)
+{
+    Manage_pea_t *temp;
+    Manage_pea_t *newNode = (Manage_pea_t*)pvPortMalloc(sizeof(Manage_pea_t));
+    temp = &gManage_pea_head[id/9];
+    if(newNode == NULL)
+    {
+        LOG_D("not have enough space");
+        return;
+    }
+    newNode->next = NULL;
+    newNode->id = id;
+    /*添加到链表*/
+    while(temp->next)
+    {
+        temp = temp->next;
+    }
+    temp->next = newNode;
+}
+
+
+/* CreateOnePea
+ * 创建一个豌豆子弹
+ */
+static void CreateOnePea(uint8_t block_id)
+{
+    Pea_Obj_Info_t *fre_temp;
+    Pea_Obj_Info_t *del_temp;
+    Pea_Info_t *Ins_temp;
+    Pea_Info_t *temp;
+    Pea_Info_t *newNode = (Pea_Info_t*)pvPortMalloc(sizeof(Pea_Info_t));
+    if(newNode == NULL)
+    {
+        LOG_D("not have enough space");
+        return;
+    }
+    fre_temp = &gFree_Pea;
+    newNode->next = NULL;
+    if(gFree_Pea.cnt > 0)/*还有空闲的豌豆*/
+    {
+        /*移除第一个节点*/
+        newNode->pea = fre_temp->next->obj;
+        del_temp = fre_temp->next;
+        fre_temp->next = fre_temp->next->next;
+        /*释放空间*/
+        vPortFree(del_temp);
+        gFree_Pea.cnt--;
+    }
+    else/*创建一个豌豆*/
+    {
+        newNode->pea = lv_img_create(lv_scr_act());
+        lv_img_set_src(newNode->pea, &pea);
+        lv_obj_add_flag(newNode->pea, LV_OBJ_FLAG_HIDDEN);/*隐藏对象*/
+    }
+    newNode->state = CRASH_NONE;/*等待碰撞僵尸*/
+    /*设置x,y坐标*/
+    newNode->x = lv_obj_get_x(g_pt_lv_plant->bg_sod[block_id]) + 35;
+    lv_obj_set_pos(newNode->pea, newNode->x, lv_obj_get_y(g_pt_lv_plant->bg_sod[block_id]) + 5);
+    /*显示出来*/
+    lv_obj_clear_flag(newNode->pea, LV_OBJ_FLAG_HIDDEN);
+    /*添加到链表中,当前需要显示的豌豆的链表中*/
+    Ins_temp = &gPea_Info_head[block_id/9];
+    temp = Ins_temp->next;
+    while(temp)
+    {
+        if(temp->x < newNode->x)/*把newNode插入到Ins_temp的前面*/
+        {
+            break;
+        }
+        Ins_temp = temp;
+        temp = temp->next;
+    }
+    newNode->next = Ins_temp->next;
+    Ins_temp->next = newNode;
+
+
+}
+
+/* DeleteOnePea
+ * 删除一个豌豆
+ */
+static Pea_Info_t * DeleteOnePea(uint8_t line, Pea_Info_t *del_node)
+{
+    Pea_Info_t *pre_node;
+    pre_node = &gPea_Info_head[line];
+    Pea_Obj_Info_t *temp = &gFree_Pea;
+    Pea_Obj_Info_t *newNode;
+    /*先添加到gFree_Pea链表*/
+    newNode = (Pea_Obj_Info_t*)pvPortMalloc(sizeof(Pea_Obj_Info_t));
+    if(newNode == NULL)
+    {
+        LOG_D("not have enough space");
+        return;
+    }
+    newNode->next = NULL;
+    newNode->obj = del_node->pea;
+    while(temp->next)
+    {
+        temp = temp->next;
+    }
+    temp->next = newNode;
+    gFree_Pea.cnt++;
+
+    /*隐藏豌豆*/
+    lv_obj_add_flag(del_node->pea, LV_OBJ_FLAG_HIDDEN);
+
+
+
+    /*把del_node从链表中删除*/
+    while(pre_node->next)
+    {
+        if(pre_node->next == del_node)/*找到要删除的节点*/
+        {
+            pre_node->next = del_node->next;
+            vPortFree(del_node);
+            break;
+        }
+        pre_node = pre_node->next;
+    }
+    return pre_node;
+
+}
+
+
+/* CreateOneZom
+ * 创建一个僵尸
+ */
+static void CreateOneZom(uint8_t line, uint8_t blood)
+{
+    if(line > 4)
+    {
+        return;
+    }
+    Zom_Info_t *temp;
+    Zom_Info_t *newNode = (Zom_Info_t*)pvPortMalloc(sizeof(Zom_Info_t));
+    if(newNode == NULL)
+    {
+        LOG_D("not have enough space");
+        return;
+    }
+    /*创建一个僵尸*/
+    lv_obj_t *zom_img = lv_img_create(g_pt_lv_plant->bg_about);
+    lv_img_set_src(zom_img, &zombie);
+    lv_obj_align_to(zom_img, g_pt_lv_plant->bg_sod[(line+1)*9 - 1], LV_ALIGN_BOTTOM_MID, 30, 0);
+
+    /*添加到僵尸列表*/
+    newNode->zom = zom_img;
+    newNode->next = NULL;
+    newNode->crash_max = blood;
+    newNode->crash_count = 0;
+    if(line == 0)
+    {
+        lv_obj_align_to(zom_img, g_pt_lv_plant->bg_sod[(line+1)*9 - 1], LV_ALIGN_BOTTOM_MID, 40, 0);
+        newNode->x = lv_obj_get_x(g_pt_lv_plant->bg_sod[(line+1)*9 - 1]) + 40;
+    }
+    else if(line == 1)
+    {
+        lv_obj_align_to(zom_img, g_pt_lv_plant->bg_sod[(line+1)*9 - 1], LV_ALIGN_BOTTOM_MID, 45, 0);
+        newNode->x = lv_obj_get_x(g_pt_lv_plant->bg_sod[(line+1)*9 - 1]) + 45;
+    }
+    else if(line == 2)
+    {
+        lv_obj_align_to(zom_img, g_pt_lv_plant->bg_sod[(line+1)*9 - 1], LV_ALIGN_BOTTOM_MID, 50, 0);
+        newNode->x = lv_obj_get_x(g_pt_lv_plant->bg_sod[(line+1)*9 - 1]) + 50;
+    }
+    else if(line == 3)
+    {
+        lv_obj_align_to(zom_img, g_pt_lv_plant->bg_sod[(line+1)*9 - 1], LV_ALIGN_BOTTOM_MID, 52, 0);
+        newNode->x = lv_obj_get_x(g_pt_lv_plant->bg_sod[(line+1)*9 - 1]) + 52;
+    }
+    else if(line == 4)
+    {
+        lv_obj_align_to(zom_img, g_pt_lv_plant->bg_sod[(line+1)*9 - 1], LV_ALIGN_BOTTOM_MID, 55, 0);
+        newNode->x = lv_obj_get_x(g_pt_lv_plant->bg_sod[(line+1)*9 - 1]) + 55;
+    }
+
+    temp = &gZom_Info_head[line];
+
+    /*尾插法*/
+    while(temp->next)
+    {
+        temp = temp->next;
+    }
+    temp->next = newNode;
+
+    /*使能产生豌豆*/
+    gManage_pea_head[line].state = MAN_START;
+    /*使能可以产生豌豆*/
+    Manage_pea_t *peatemp;
+    peatemp = gManage_pea_head[line].next;
+    while(peatemp)
+    {
+        peatemp->need_gen = PEA_CAN_GEN;/*可以产生豌豆*/
+        peatemp = peatemp->next;
+    }
+
 }
 
 /* CollectSunEvent_Add
@@ -395,6 +838,16 @@ static void lv_plant_game_init(void)
     //CreateOneSunFlower(0);
     //CreateOneSunFlower(1);
 
+
+
+    /*初始豌豆*/
+    Pea_List_Init();
+
+    CreateOneZom(0, 10);
+    CreateOneZom(1, 10);
+    CreateOneZom(2, 10);
+    CreateOneZom(3, 10);
+    CreateOneZom(4, 10);
 }
 
 /* Delete_theSunflower
@@ -584,6 +1037,8 @@ static void CreateOneGat(uint8_t block_id)
     lv_label_set_text_fmt(g_pt_lv_plant->sun_label, "%d", gTotal_sun);
     /*添加射手到链表*/
     AddGatEvent(block_id);
+    /*添加豌豆射手到链表中*/
+    AddGatPeaToList(block_id);
 }
 
 /* sun_anim_y_cb
@@ -612,15 +1067,15 @@ static void CreateOneSun(void)
     srand((unsigned)time(NULL));
     uint16_t rand_x = rand() % (240);
     uint16_t rand_y = rand() % (460);
+    static sun_id = 45;
 
-    //sun = lv_img_create(g_pt_lv_plant->bg_about);
+    if(sun_id >= SUN_SHOW_MAX)
+    {
+        sun_id = 45;
+    }
 
-    sun = lv_img_create(lv_scr_act());
-    lv_img_set_src(sun, &Sun2);
-    /*添加可以点击标志*/
-    lv_obj_add_flag(sun, LV_OBJ_FLAG_CLICKABLE);/*允许点击*/
-    /*添加点击事件回调函数*/
-    lv_obj_add_event_cb(sun, event_handler_sunclicked, LV_EVENT_CLICKED, NULL);
+    sun = gAll_Sun_Info.obj_sun[sun_id];
+    sun_id++;
 
     rand_x += 20;
     rand_y += 45;
@@ -648,7 +1103,8 @@ static void CreateOneSun(void)
     lv_anim_set_exec_cb(&anim_sun, sun_anim_y_cb);
     lv_anim_set_values(&anim_sun, 40, rand_y);
     lv_anim_start(&anim_sun);
-    printf("create sun = %x\r\n", sun);
+
+    lv_obj_clear_flag(sun, LV_OBJ_FLAG_HIDDEN);/*显示*/
 
     CollectSunEvent_Add(sun);/*添加到链表中*/
 }
@@ -766,14 +1222,22 @@ static void event_handler_sunclicked(lv_event_t *e)
 	lv_event_code_t code = lv_event_get_code(e);
 
 	lv_obj_t *obj = lv_event_get_current_target(e);
-
+    uint8_t sun_index = (uint8_t)lv_event_get_user_data(e);
 	lv_obj_t *tag = lv_event_get_target(e);
 	if(code == LV_EVENT_CLICKED)/*点击*/
 	{
         //lv_obj_del(obj);
         //lv_anim_del_all();
-        lv_anim_del(obj, NULL);/*删除动画*/
-        CollectSun(obj, SUN_SYS_GEN);
+        if(sun_index < 45)
+        {
+            CollectSun(obj, SUN_FLO_GEN);
+        }
+        else
+        {
+            lv_anim_del(obj, NULL);/*删除动画*/
+            CollectSun(obj, SUN_SYS_GEN);
+        }
+
 	}
 
 }

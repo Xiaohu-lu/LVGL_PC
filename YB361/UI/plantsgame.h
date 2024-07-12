@@ -6,10 +6,12 @@
 #define COLLECT_SUN_X       10
 #define COLLECT_SUN_Y       2
 
+#define EAT_PLANT_COUNT     20
+
 #define SYS_SUN_EXI_TIME         6   /*pc是以s为单位6s*/
 #define SUN_FLOWER_EXI_TIME     8   /*pc是以s为单位10s*/
 #define SUN_FLOWER_GEN_INTER    16   /*产生的时间间隔*/
-
+#define PEA_GEN_TIME            4
 typedef enum
 {
     SUN_SYS_GEN = 0,        /*系统产生的*/
@@ -71,7 +73,6 @@ typedef struct _lv_sunevent{
 
 typedef struct _lv_sunflower
 {
-
     uint32_t gen_time;              /*生成时间戳*/
     uint32_t exi_time;              /*持续时间*/
     uint8_t sun_state;              /*阳光状态,0:等待点击,1:点击到等待动画效果*/
@@ -89,6 +90,84 @@ typedef struct _lv_gatlpea
     lv_obj_t *gatling;              /*射手*/
     lv_obj_t *pea;                  /*豌豆子弹*/
 }Gatlingpea_t;
+
+#define SUN_SHOW_MAX            50
+
+typedef enum
+{
+    SUN_STATE_FREE = 0,
+    SUN_STATE_BUSY,
+}SUN_STATE_E;
+
+
+typedef struct _lv_sun_info
+{
+    lv_obj_t *obj_sun[SUN_SHOW_MAX];    /*太阳对象*/
+    //uint8_t sun_state[SUN_SHOW_MAX];    /*太阳对象状态*/
+}All_Sun_Info_t;
+
+#define PEA_SHOW_MAX           45
+
+#define PEA_SPEED_X             10
+#define ZOM_SPPED_X             2
+typedef struct _lv_pea_s
+{
+    lv_obj_t *obj;          /*对象句柄*/
+    struct _lv_pea_s *next;
+    uint8_t cnt;
+}Pea_Obj_Info_t;
+
+typedef struct _lv_pea
+{
+    lv_obj_t *pea;              /*子弹对象*/
+    struct _lv_pea *next;       /*下一个*/
+    uint16_t x;                 /*x坐标*/
+    uint8_t state;              /*要删除*/
+}Pea_Info_t;    /*豌豆子弹信息*/
+
+
+typedef struct _lv_zombie
+{
+    lv_obj_t *zom;              /*僵尸对象*/
+    struct _lv_zombie *next;
+    uint16_t x;                 /*x坐标*/
+    uint8_t crash_count;        /*当前碰撞次数*/
+    uint8_t crash_max;          /*最大碰撞次数*/
+    uint8_t wait_count;         /*等待吃掉植物*/
+}Zom_Info_t;
+
+typedef enum
+{
+    CRASH_NONE = 0,
+    CRASH_NEXT,
+}CRASH_E;
+
+typedef enum
+{
+    MAN_STOP = 0,
+    MAN_START,
+}MANPEA_E;
+
+
+typedef enum
+{
+    PEA_WAIT_GEN = 0,
+    PEA_CAN_GEN,
+}PEA_GEN_E;
+
+
+typedef struct _lv_man_pea
+{
+    struct _lv_man_pea *next;
+    uint32_t gen_time;          /*时间戳*/
+    uint8_t id;                 /*豌豆射手处于的块*/
+    uint8_t state;              /*有僵尸,工作,没僵尸不工作*/
+    uint8_t need_gen;           /*是否要创建豌豆*/
+}Manage_pea_t;
+
+
+
+
 
 
 void lv_plant_game(void);

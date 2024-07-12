@@ -63,7 +63,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR szCmdLi
     lv_init();
 
     /*Initialize the HAL for LittlevGL*/
-    lv_win32_init(hInstance, SW_SHOWNORMAL, 480, 320, NULL);
+    lv_win32_init(hInstance, SW_SHOWNORMAL, 320, 480, NULL);
     printf("hInstance size = %d,\r\n", sizeof(hInstance));
     ghInstance = hInstance;
     printf("hInstanc = %x, ghInstance = %x\r\n", hInstance, ghInstance);
@@ -75,13 +75,13 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR szCmdLi
     add_some_data();
     //anim_show_1();
     //anim_show_2();
-    //lv_main_page_demo(1000);
+    lv_main_page_demo(1000);
 
     //lv_example_table_2();
     //lv_example_roller_1();
     //lv_gif_example_1();
     //lv_wait_ainmation(2000);
-    lv_plant_game();
+    //lv_plant_game();
     //anim_sun_test1();
     //anim_show_2();
     //anim_show_1();
@@ -91,6 +91,5 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR szCmdLi
         lv_task_handler();
         usleep(10000);       /*Just to let the system breath*/
     }
-    while(1);
     return 0;
 }
