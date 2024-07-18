@@ -132,6 +132,9 @@
 		<Unit filename="Lv_ui/waitting.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="Lv_ui/wallpaper1.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="Lv_ui/zombie.c">
 			<Option compilerVar="CC" />
 		</Unit>

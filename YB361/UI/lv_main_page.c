@@ -69,6 +69,8 @@ LV_IMG_DECLARE(img_lv_100ask_icon_regbit);		// 09
 LV_IMG_DECLARE(img_lv_100ask_icon_calc);		// 10
 LV_IMG_DECLARE(img_lv_100ask_icon_widgets);   	// 11
 
+
+LV_IMG_DECLARE(wallpaper1);
 /* 桌标图标数组 */
 #if 1
 static const lv_img_dsc_t *app_icon[] = \
@@ -132,7 +134,7 @@ void lv_main_page_demo(uint32_t delay)
 	//lv_obj_remove_style_all(bg_top);
 	set_user_style(bg_top);
 
-	lv_img_set_src(bg_top, &img_lv_100ask_bg);
+	lv_img_set_src(bg_top, &wallpaper1);
 	lv_obj_align(bg_top, LV_ALIGN_CENTER, 0, 0);
 	lv_obj_set_size(bg_top, 320, 480);
 	lv_obj_fade_in(bg_top, 0, delay);
