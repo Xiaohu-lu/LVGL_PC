@@ -69,7 +69,7 @@ LV_IMG_DECLARE(img_lv_100ask_icon_regbit);		// 09
 LV_IMG_DECLARE(img_lv_100ask_icon_calc);		// 10
 LV_IMG_DECLARE(img_lv_100ask_icon_widgets);   	// 11
 
-
+LV_IMG_DECLARE(img_lv_100ask_bg);
 LV_IMG_DECLARE(wallpaper1);
 /* 桌标图标数组 */
 #if 1
@@ -163,6 +163,19 @@ void lv_main_page_demo(uint32_t delay)
 	tabview_desktop_id = 1;
 
 	lv_main_page_demo_home(delay);
+}
+
+void change_main_page_bg(void)
+{
+    static uint8_t page_id = 0;
+    if(page_id == 0){
+        page_id = 1;
+        lv_img_set_src(bg_top, &wallpaper1);
+    }
+    else{
+        page_id = 0;
+        lv_img_set_src(bg_top, &img_lv_100ask_bg);
+    }
 }
 
 
@@ -349,6 +362,7 @@ static void event_handler_stm32_demo_about(lv_event_t *e)
 	//lv_obj_t *obj = lv_event_get_current_target(event);
 	if(code == LV_EVENT_CLICKED)/*点击*/
 	{
+	    change_main_page_bg();
 		tabview_desktop_id = lv_tabview_get_tab_act(tabview_desktop);
 		lv_obj_del(tabview_desktop);
 		lv_board_about();
@@ -366,6 +380,7 @@ static void event_handler_stm32_demo_music_player(lv_event_t *e)
 	//lv_obj_t *obj = lv_event_get_current_target(event);
 	if(code == LV_EVENT_CLICKED)/*点击*/
 	{
+	    change_main_page_bg();
 		tabview_desktop_id = lv_tabview_get_tab_act(tabview_desktop);
 		lv_obj_del(tabview_desktop);
 		lv_music_player();
@@ -382,6 +397,7 @@ static void event_handler_stm32_demo_game_2048(lv_event_t *e)
 	//lv_obj_t *obj = lv_event_get_current_target(event);
 	if(code == LV_EVENT_CLICKED)/*点击*/
 	{
+	    change_main_page_bg();
 		tabview_desktop_id = lv_tabview_get_tab_act(tabview_desktop);
 		lv_obj_del(tabview_desktop);
 		lv_block_game();

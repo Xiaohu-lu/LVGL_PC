@@ -279,3 +279,109 @@ void add_some_data(void)
 }
 
 
+
+Timer_List_s_t Timer_list_header;
+
+static uint8_t Lamp_timer_flag = 0;
+
+static uint8_t id = 0;
+
+static void Lamp_Timer_head_init(void)
+{
+    Timer_list_header.next = NULL;
+}
+
+static Timer_List_s_t *Lamp_Timer_createNode(uint8_t hour, uint8_t minute, uint8_t wake_open, uint8_t repeat, uint8_t music, uint8_t enable)
+{
+	Timer_List_s_t *newNode = (Timer_List_s_t *)pvPortMalloc(sizeof(Timer_List_s_t));
+	if(newNode == NULL){/*申请空间失败*/
+		return NULL;
+	}
+	uint32_t checksum = 0;
+	newNode->timer_info.hour = hour;
+	newNode->timer_info.minute = minute;
+	newNode->timer_info.wake_open = wake_open;
+	newNode->timer_info.repeat = repeat;
+	newNode->timer_info.music = music;
+	newNode->timer_info.timestamp = hour * 24 + minute;
+	/*minute*1,hour*60,music*1500,repeat*6000,wake_open*18000*/
+	checksum = minute * 1 + hour * 60 + music * 1500 + repeat * 6000 + wake_open * 18000;
+	newNode->timer_info.checksum = checksum;
+	newNode->timer_info.alarm_open = enable;
+	return newNode;
+}
+
+/* Lamp_Timer_InsertNode
+ * 链表添加一个节点
+ * */
+static void Lamp_Timer_InsertNode(Timer_List_s_t *newNode)
+{
+	if(Lamp_timer_flag == 0){
+		Lamp_Timer_head_init();
+		Lamp_timer_flag = 1;
+	}
+	Timer_List_s_t *head_node = &Timer_list_header;
+	Timer_List_s_t *next_node;
+	next_node = head_node->next;
+
+	/* 遍历链表
+	 * 如果找到一样就不重新添加了
+ 	 */
+	while(next_node != NULL){
+		/*需要把newNode插入到next_node的前面*/
+		if(next_node->timer_info.checksum == newNode->timer_info.checksum){
+			return;
+		}
+		head_node = next_node;
+		next_node = next_node->next;
+	}
+
+	head_node = &Timer_list_header;
+	next_node = head_node->next;
+	/*遍历链表*/
+	while(next_node != NULL){
+		/*需要把newNode插入到next_node的前面*/
+		if(next_node->timer_info.timestamp > newNode->timer_info.timestamp){
+			newNode->next = next_node;
+			head_node->next = newNode;
+			newNode->timer_info.id = id;
+			id += 1;
+			return;
+		}
+		head_node = next_node;
+		next_node = next_node->next;
+	}
+	/*插入到尾部*/
+	head_node->next = newNode;
+	newNode->next = NULL;
+	newNode->timer_info.id = id;
+    id += 1;
+}
+
+void Lamp_Timer_PrintList(void)
+{
+    Timer_List_s_t *head_node = &Timer_list_header;
+    head_node = head_node->next;
+    while(head_node){
+        printf("id = %d\r\n", head_node->timer_info.id);
+        printf("%d : %d\r\n", head_node->timer_info.hour, head_node->timer_info.minute);
+        printf("%d\r\n", head_node->timer_info.checksum);
+        head_node = head_node->next;
+    }
+}
+
+
+void Lamp_Timer_Test(void)
+{
+    /*8:30, 1晨光唤醒, 0-重复, 0-鸟鸣*/
+    Timer_List_s_t *new_node = Lamp_Timer_createNode(11, 30, 1, 0, 0, 0);
+    Lamp_Timer_InsertNode(new_node);
+    /*8:30, 1晨光唤醒, 0-重复, 0-鸟鸣*/
+    new_node = Lamp_Timer_createNode(11, 30, 1, 0, 0, 0);
+    Lamp_Timer_InsertNode(new_node);
+     /*7:30, 1晨光唤醒, 0-重复, 0-鸟鸣*/
+    new_node = Lamp_Timer_createNode(7, 30, 1, 0, 0, 1);
+    Lamp_Timer_InsertNode(new_node);
+
+    Lamp_Timer_PrintList();
+}

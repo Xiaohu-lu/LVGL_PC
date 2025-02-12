@@ -32,7 +32,7 @@
 /*Enable more complex drawing routines to manage screens transparency.
  *Can be used if the UI is above another layer, e.g. an OSD menu or video player.
  *Requires `LV_COLOR_DEPTH = 32` colors and the screen's `bg_opa` should be set to non LV_OPA_COVER value*/
-#define LV_COLOR_SCREEN_TRANSP 0
+#define LV_COLOR_SCREEN_TRANSP 1
 
 /* Adjust color mix functions rounding. GPUs might calculate color mix (blending) differently.
  * 0: round down, 64: round up from x.75, 128: round up from half, 192: round up from x.25, 254: round up */
@@ -243,14 +243,14 @@
  *-----------*/
 
 /*1: Show CPU usage and FPS count*/
-#define LV_USE_PERF_MONITOR 1
+#define LV_USE_PERF_MONITOR 0
 #if LV_USE_PERF_MONITOR
     #define LV_USE_PERF_MONITOR_POS LV_ALIGN_BOTTOM_RIGHT
 #endif
 
 /*1: Show the used memory and the memory fragmentation
  * Requires LV_MEM_CUSTOM = 0*/
-#define LV_USE_MEM_MONITOR 1
+#define LV_USE_MEM_MONITOR 0
 #if LV_USE_MEM_MONITOR
     #define LV_USE_MEM_MONITOR_POS LV_ALIGN_BOTTOM_LEFT
 #endif
@@ -353,6 +353,27 @@
 #define LV_FONT_DEJAVU_16_PERSIAN_HEBREW 0  /*Hebrew, Arabic, Persian letters and all their forms*/
 #define LV_FONT_SIMSUN_16_CJK            1  /*1000 most common CJK radicals*/
 #define SONG_FONT14                      1  /*1000 most common CJK radicals*/
+#define LAMP_FONT32                      1  /*1000 most common CJK radicals*/
+#define LAMP_FONT24                      1
+#define LAMP_FONT16                      1
+#define LAMP_FONT18                      1
+#define LAMP_FONT20                      1
+#define LAMP_FONT40                      1
+
+#define HARM_SAN_10                      1
+#define HARM_SAN_12                      1
+#define HARM_SAN_16                      1
+#define HARM_SAN_18                      1
+#define HARM_SAN_20                      1
+#define HARM_SAN_22                      1
+#define HARM_SAN_24                      1
+#define HARM_SAN_26                      1
+#define HARM_SAN_28                      1
+#define HARM_SAN_32                      1
+#define HARM_SAN_34                      1
+#define HARM_SAN_36                      1
+#define HARM_SAN_100                     1
+
 
 /*Pixel perfect monospace fonts*/
 #define LV_FONT_UNSCII_8  0

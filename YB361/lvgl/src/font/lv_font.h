@@ -233,6 +233,83 @@ LV_FONT_DECLARE(lv_font_simsun_16_cjk)
 LV_FONT_DECLARE(song_font14)
 #endif
 
+#if LAMP_FONT32
+LV_FONT_DECLARE(Lamp_font32)
+#endif
+
+#if LAMP_FONT40
+LV_FONT_DECLARE(Lamp_font40)
+#endif
+
+#if LAMP_FONT24
+LV_FONT_DECLARE(Lamp_font24)
+#endif
+
+#if LAMP_FONT18
+LV_FONT_DECLARE(Lamp_font18)
+#endif
+
+#if LAMP_FONT20
+LV_FONT_DECLARE(Lamp_font20)
+#endif
+
+#if LAMP_FONT16
+LV_FONT_DECLARE(Lamp_font16)
+#endif
+
+#if HARM_SAN_10
+LV_FONT_DECLARE(Harm_san_10)
+#endif
+
+#if HARM_SAN_12
+LV_FONT_DECLARE(Harm_san_12)
+#endif
+
+#if HARM_SAN_16
+LV_FONT_DECLARE(Harm_san_16)
+#endif
+
+#if HARM_SAN_18
+LV_FONT_DECLARE(Harm_san_18)
+#endif
+
+#if HARM_SAN_20
+LV_FONT_DECLARE(Harm_san_20)
+#endif
+
+#if HARM_SAN_22
+LV_FONT_DECLARE(Harm_san_22)
+#endif
+
+#if HARM_SAN_24
+LV_FONT_DECLARE(Harm_san_24)
+#endif
+
+#if HARM_SAN_26
+LV_FONT_DECLARE(Harm_san_26)
+#endif
+
+#if HARM_SAN_28
+LV_FONT_DECLARE(Harm_san_28)
+#endif
+
+#if HARM_SAN_32
+LV_FONT_DECLARE(Harm_san_32)
+#endif
+
+#if HARM_SAN_34
+LV_FONT_DECLARE(Harm_san_34)
+#endif
+
+#if HARM_SAN_36
+LV_FONT_DECLARE(Harm_san_36)
+#endif
+
+#if HARM_SAN_100
+LV_FONT_DECLARE(Harm_san_100)
+#endif
+
+
 #if LV_FONT_UNSCII_8
 LV_FONT_DECLARE(lv_font_unscii_8)
 #endif

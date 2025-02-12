@@ -19,6 +19,7 @@
 					<Add directory="." />
 					<Add directory="lvgl" />
 					<Add directory="UI" />
+					<Add directory="table_lamp" />
 				</Compiler>
 				<Linker>
 					<Add option="-lmingw32 -mwindows -mconsole" />
@@ -210,6 +211,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="UI/plantsgame.h" />
+		<Unit filename="UI/widget_example.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="UI/widget_example.h" />
 		<Unit filename="game/gomoku.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -218,6 +223,114 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="game/lv_block_game.h" />
+		<Unit filename="lamp_img/alarm.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lamp_img/clock.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lamp_img/count.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lamp_img/dray.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lamp_img/eye.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lamp_img/ico_0.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lamp_img/ico_1.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lamp_img/ico_10.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lamp_img/ico_11.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lamp_img/ico_12.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lamp_img/ico_13.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lamp_img/ico_14.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lamp_img/ico_15.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lamp_img/ico_16.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lamp_img/ico_17.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lamp_img/ico_18.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lamp_img/ico_19.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lamp_img/ico_2.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lamp_img/ico_20.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lamp_img/ico_3.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lamp_img/ico_4.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lamp_img/ico_5.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lamp_img/ico_6.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lamp_img/ico_7.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lamp_img/ico_8.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lamp_img/ico_9.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lamp_img/lum_d.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lamp_img/lum_m.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lamp_img/lum_u.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lamp_img/pose.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lamp_img/record.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lamp_img/remind.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lamp_img/udray.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lamp_img/uray.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lamp_img/voice.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lamp_img/volume.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="lv_100ask_teach_demos/lv_100ask_teach_demos.h" />
 		<Unit filename="lv_100ask_teach_demos/lv_100ask_teach_demos_conf_template.h" />
 		<Unit filename="lv_100ask_teach_demos/src/lv_100ask_demo_course_2_1_1/lv_100ask_demo_course_2_1_1.h" />
@@ -1586,6 +1699,60 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="lvgl/src/extra/widgets/win/lv_win.h" />
+		<Unit filename="lvgl/src/font/Harm_san_10.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lvgl/src/font/Harm_san_100.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lvgl/src/font/Harm_san_12.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lvgl/src/font/Harm_san_16.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lvgl/src/font/Harm_san_18.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lvgl/src/font/Harm_san_20.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lvgl/src/font/Harm_san_22.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lvgl/src/font/Harm_san_24.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lvgl/src/font/Harm_san_26.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lvgl/src/font/Harm_san_28.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lvgl/src/font/Harm_san_32.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lvgl/src/font/Harm_san_34.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lvgl/src/font/Harm_san_36.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lvgl/src/font/Lamp_font18.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lvgl/src/font/Lamp_font20.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lvgl/src/font/Lamp_font24.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lvgl/src/font/Lamp_font32.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lvgl/src/font/Lamp_font40.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="lvgl/src/font/lv_font.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -1928,6 +2095,50 @@
 		</Unit>
 		<Unit filename="lvgl/tests/unity/unity_support.h" />
 		<Unit filename="main.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="table_lamp/Eye_off.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="table_lamp/Eye_on.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="table_lamp/Lamp_audio.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="table_lamp/Lamp_audio.h" />
+		<Unit filename="table_lamp/Lamp_home.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="table_lamp/Lamp_home.h" />
+		<Unit filename="table_lamp/Lamp_light.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="table_lamp/Lamp_light.h" />
+		<Unit filename="table_lamp/Lamp_main.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="table_lamp/Lamp_main.h" />
+		<Unit filename="table_lamp/Lamp_power.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="table_lamp/Lamp_power.h" />
+		<Unit filename="table_lamp/Pose_off.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="table_lamp/Pose_on.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="table_lamp/Record_off.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="table_lamp/Rest_off.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="table_lamp/Rest_on.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="table_lamp/record_on.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Extensions>

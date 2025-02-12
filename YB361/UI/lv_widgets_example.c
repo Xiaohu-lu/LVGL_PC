@@ -316,6 +316,249 @@ void lv_example_calendar_1(void)
 
 
 /*meter*/
+static lv_obj_t *meter;
+static void set_value(void *indic, int32_t v)
+{
+    lv_meter_set_indicator_value(meter, indic, v);
+}
+
+void lv_example_meter_1(void)
+{
+    meter = lv_meter_create(lv_scr_act());
+    lv_obj_center(meter);
+    lv_obj_set_size(meter, 200, 200);
+
+    lv_meter_scale_t *scale = lv_meter_add_scale(meter);
+    lv_meter_set_scale_ticks(meter, scale, 41, 2, 10, lv_palette_main(LV_PALETTE_GREY));
+    lv_meter_set_scale_major_ticks(meter, scale, 8, 4, 15, lv_color_black(), 10);
+
+    lv_meter_indicator_t *indic;
+
+    indic = lv_meter_add_arc(meter, scale, 3, lv_palette_main(LV_PALETTE_BLUE), 0);
+    lv_meter_set_indicator_start_value(meter, indic, 0);
+    lv_meter_set_indicator_end_value(meter, indic, 20);
+
+    indic = lv_meter_add_scale_lines(meter, scale, lv_palette_main(LV_PALETTE_BLUE), lv_palette_main(LV_PALETTE_BLUE), false, 0);
+    lv_meter_set_indicator_start_value(meter, indic, 0);
+    lv_meter_set_indicator_end_value(meter, indic, 20);
+
+    indic = lv_meter_add_arc(meter, scale, 3, lv_palette_main(LV_PALETTE_RED), 0);
+    lv_meter_set_indicator_start_value(meter, indic, 80);
+    lv_meter_set_indicator_end_value(meter, indic, 100);
+
+    indic = lv_meter_add_needle_line(meter, scale, 4, lv_palette_main(LV_PALETTE_GREY), -10);
+
+    lv_anim_t a;
+    lv_anim_init(&a);
+    lv_anim_set_exec_cb(&a, set_value);
+    lv_anim_set_var(&a, indic);
+    lv_anim_set_values(&a, 0, 100);
+    lv_anim_set_time(&a, 2000);
+    lv_anim_set_repeat_delay(&a, 100);
+    lv_anim_set_playback_time(&a, 500);
+    lv_anim_set_playback_delay(&a, 100);
+    lv_anim_set_repeat_count(&a, LV_ANIM_REPEAT_INFINITE);
+    lv_anim_start(&a);
+
+}
+
+static void set_value1(void *indic, int32_t v)
+{
+    lv_meter_set_indicator_end_value(meter, indic, v);
+}
+void lv_example_meter_2(void)
+{
+    meter = lv_meter_create(lv_scr_act());
+    lv_obj_center(meter);
+    lv_obj_set_size(meter, 200, 200);
+
+    lv_obj_remove_style(meter, NULL, LV_PART_INDICATOR);
+
+    lv_meter_scale_t *scale = lv_meter_add_scale(meter);
+    lv_meter_set_scale_ticks(meter, scale, 11, 2, 10, lv_palette_main(LV_PALETTE_GREY));
+    lv_meter_set_scale_major_ticks(meter, scale, 1, 2, 30, lv_color_hex3(0xeee), 15);
+    lv_meter_set_scale_range(meter, scale, 0, 100, 270, 90);
+
+
+    lv_meter_indicator_t *indic1 = lv_meter_add_arc(meter, scale, 10, lv_palette_main(LV_PALETTE_RED), 0);
+    lv_meter_indicator_t *indic2 = lv_meter_add_arc(meter, scale, 10, lv_palette_main(LV_PALETTE_GREEN), -10);
+    lv_meter_indicator_t *indic3 = lv_meter_add_arc(meter, scale, 10, lv_palette_main(LV_PALETTE_BLUE), -20);
+
+    lv_anim_t a;
+    lv_anim_init(&a);
+    lv_anim_set_exec_cb(&a, set_value1);
+    lv_anim_set_values(&a, 0, 100);
+    lv_anim_set_repeat_delay(&a, 100);
+    lv_anim_set_playback_delay(&a, 100);
+    lv_anim_set_repeat_count(&a, LV_ANIM_REPEAT_INFINITE);
+
+    lv_anim_set_time(&a, 2000);
+    lv_anim_set_playback_time(&a, 500);
+    lv_anim_set_var(&a, indic1);
+    lv_anim_start(&a);
+
+    lv_anim_set_time(&a, 1000);
+    lv_anim_set_playback_time(&a, 1000);
+    lv_anim_set_var(&a, indic2);
+    lv_anim_start(&a);
+
+    lv_anim_set_time(&a, 1000);
+    lv_anim_set_playback_time(&a, 2000);
+    lv_anim_set_var(&a, indic3);
+    lv_anim_start(&a);
+
+
+}
+
+
+void lv_example_acr_1(void)
+{
+    lv_obj_t * arc = lv_arc_create(lv_scr_act());
+    lv_obj_set_size(arc, 178, 178);
+    lv_arc_set_angles(arc, 0, 360);
+    lv_arc_set_bg_angles(arc, 0, 360);
+    lv_obj_set_style_arc_width(arc, 14, LV_PART_INDICATOR);/*设置前景弧宽度*/
+    lv_obj_set_style_arc_width(arc, 14, LV_PART_MAIN);/*设置背景弧宽度*/
+    lv_obj_set_style_arc_color(arc, lv_color_hex(0xffe58f), LV_PART_INDICATOR);/*设置前景弧颜色*/
+    lv_obj_set_style_arc_color(arc, lv_color_hex(0xffffff), LV_PART_MAIN);
+    lv_obj_remove_style(arc, NULL, LV_PART_KNOB);
+    lv_arc_set_mode(arc, LV_ARC_MODE_NORMAL);
+    lv_arc_set_rotation(arc, 180);
+    lv_arc_set_range(arc, 0, 3600);
+    lv_arc_set_value(arc, 60*30);
+
+    //lv_obj_clear_flag(arc, LV_OBJ_FLAG_CLICKABLE);
+    //lv_obj_align(arc, LV_ALIGN_TOP_LEFT, 111, 60);
+    lv_obj_center(arc);
+
+    #if 0
+    lv_obj_t *arc1 = lv_arc_create(lv_scr_act());
+    lv_obj_remove_style(arc1, NULL, LV_PART_KNOB);/*移除圆弧手柄*/
+    //lv_obj_clear_flag(arc1, LV_OBJ_FLAG_CLICKABLE);/*禁止点击事件*/
+    lv_obj_set_size(arc1, 178, 178);
+    lv_arc_set_angles(arc1, 0, 180);
+    lv_arc_set_bg_angles(arc1, 0, 180);
+
+    lv_obj_set_style_arc_width(arc1, 14, LV_PART_INDICATOR);/*设置前景弧宽度*/
+    lv_obj_set_style_arc_width(arc1, 14, LV_PART_MAIN);/*设置背景弧宽度*/
+    lv_obj_set_style_arc_color(arc1, lv_color_hex(0xffe58f), LV_PART_INDICATOR);/*设置前景弧颜色*/
+    lv_obj_set_style_arc_color(arc1, lv_color_hex(0xffffff), LV_PART_MAIN);
+    //lv_obj_set_style_arc_rounded(arc1, false, LV_PART_MAIN);
+    lv_arc_set_mode(arc1, LV_ARC_MODE_REVERSE);
+    lv_arc_set_rotation(arc1, 0);
+    lv_arc_set_value(arc1, 100);
+
+
+    lv_obj_align(arc1, LV_ALIGN_TOP_LEFT, 111, 60);
+
+    /*创建标签*/
+    lv_label_t *label = lv_label_create(lv_scr_act());
+    lv_obj_set_style_text_font(label, &Lamp_font32, 0);
+    //lv_label_set_text(label, "05:00");
+    lv_label_set_text_fmt(label, "%02d\%%", 75);
+    //printf("%02d\%%", 75);
+    lv_obj_align(label, LV_ALIGN_TOP_LEFT, 151, 128);
+
+#endif
+
+
+}
+
+void lv_example_acr_2(void)
+{
+    static lv_style_t bg_style_round;
+    lv_style_init(&bg_style_round);
+	lv_style_set_bg_opa(&bg_style_round, LV_OPA_100);/*设置背景透明度*/
+	lv_style_set_radius(&bg_style_round, 60);/*设置圆角*/
+	lv_style_set_bg_color(&bg_style_round, lv_color_hex(0xffe58f));/*设置背景颜色,lv_color_hex()RGB888*/
+	lv_style_set_pad_top(&bg_style_round, 0);
+	lv_style_set_pad_bottom(&bg_style_round, 0);
+	lv_style_set_pad_left(&bg_style_round, 0);
+	lv_style_set_pad_right(&bg_style_round, 0);
+	lv_style_set_border_width(&bg_style_round, 0);
+
+	static lv_style_t style_con;
+    lv_style_init(&style_con);
+	lv_style_set_bg_opa(&style_con, LV_OPA_100);/*设置背景透明度*/
+	lv_style_set_radius(&style_con, 60);/*设置圆角*/
+	lv_style_set_bg_color(&style_con, lv_color_hex(0xffe58f));/*设置背景颜色,lv_color_hex()RGB888*/
+	lv_style_set_pad_top(&style_con, 0);
+	lv_style_set_pad_bottom(&style_con, 0);
+	lv_style_set_pad_left(&style_con, 0);
+	lv_style_set_pad_right(&style_con, 0);
+	lv_style_set_border_width(&style_con, 0);
+	lv_style_set_transform_angle(&style_con, 900);
+
+	lv_obj_t *bg = lv_obj_create(lv_scr_act());
+	lv_obj_set_size(bg, 320, 240);
+	lv_obj_add_style(bg, &bg_style_round, LV_PART_MAIN);
+    lv_obj_set_style_bg_color(bg, lv_color_hex(0x000000), LV_PART_MAIN);
+
+    lv_obj_t * arc = lv_arc_create(bg);
+    lv_obj_set_size(arc, 142, 142);
+    lv_arc_set_angles(arc, 0, 254);
+    lv_arc_set_bg_angles(arc, 0, 254);
+    lv_obj_set_style_arc_width(arc, 11, LV_PART_INDICATOR);/*设置前景弧宽度*/
+    lv_obj_set_style_arc_width(arc, 11, LV_PART_MAIN);/*设置背景弧宽度*/
+    lv_obj_set_style_arc_color(arc, lv_color_hex(0xffe58f), LV_PART_INDICATOR);/*设置前景弧颜色*/
+    lv_obj_set_style_arc_color(arc, lv_color_hex(0xffffff), LV_PART_MAIN);
+    lv_obj_remove_style(arc, NULL, LV_PART_KNOB);
+    lv_arc_set_mode(arc, LV_ARC_MODE_NORMAL);
+    lv_arc_set_rotation(arc, 143);
+    lv_arc_set_value(arc, 100);
+    lv_obj_align(arc, LV_ALIGN_TOP_MID, 0, 49);
+
+	/*child[1]*/
+	lv_obj_t *con = lv_obj_create(bg);
+	lv_obj_set_size(con, 7, 28);
+	lv_obj_add_style(con, &bg_style_round, LV_PART_MAIN);
+	lv_obj_align(con, LV_ALIGN_BOTTOM_MID, -50, -96);
+	lv_obj_set_style_transform_angle(con, 2400, LV_PART_MAIN);
+
+	/*child[2]*/
+	con = lv_obj_create(bg);
+	lv_obj_set_size(con, 7, 12);
+	lv_obj_add_style(con, &bg_style_round, LV_PART_MAIN);
+	lv_obj_align(con, LV_ALIGN_TOP_MID, 0, 62);
+
+	/*child[3]*/
+	con = lv_obj_create(bg);
+	lv_obj_set_size(con, 7, 12);
+	lv_obj_add_style(con, &bg_style_round, LV_PART_MAIN);
+	lv_obj_align(con, LV_ALIGN_BOTTOM_MID, 50, -96);
+	lv_obj_set_style_transform_angle(con, 1200, LV_PART_MAIN);
+
+	/*child[3]*/
+	con = lv_obj_create(bg);
+	lv_obj_set_size(con, 7, 12);
+	lv_obj_add_style(con, &bg_style_round, LV_PART_MAIN);
+	lv_obj_align(con, LV_ALIGN_BOTTOM_MID, 0, -60);
+
+	#if 0
+	lv_obj_t *label = lv_label_create(bg);
+	lv_obj_set_style_text_font(label, &Harm_san_34, LV_PART_MAIN);
+	lv_obj_set_style_text_color(label, lv_color_hex(0xFFFFFF), LV_PART_MAIN);
+	//lv_obj_align(label, LV_ALIGN_TOP_MID, 0, 100);
+	//lv_obj_align(label, LV_ALIGN_TOP_LEFT, 143, 99);
+	lv_obj_align(label, LV_ALIGN_TOP_LEFT, 134, 99);
+	lv_label_set_text(label, "10");
+
+	/*child[6]*/
+	lv_obj_t *label_l = lv_label_create(bg);
+	lv_obj_set_style_text_font(label_l, &Harm_san_24, LV_PART_MAIN);
+	lv_obj_set_style_text_color(label_l, lv_color_hex(0xFFFFFF), LV_PART_MAIN);
+	lv_obj_align_to(label_l, label, LV_ALIGN_OUT_RIGHT_BOTTOM, 0, 0);
+	//lv_obj_align(label_l, LV_ALIGN_TOP_MID, 20, 100);
+	lv_label_set_text(label_l, "S");
+#endif // 0
+
+    lv_obj_t *label = lv_label_create(bg);
+	lv_obj_set_style_text_font(label, &Harm_san_32, LV_PART_MAIN);
+	lv_obj_set_style_text_color(label, lv_color_hex(0xFFFFFF), LV_PART_MAIN);
+	lv_obj_align(label, LV_ALIGN_TOP_MID, 0, 102);
+	lv_label_set_text(label, "1档");
+}
+
 void lv_example_meter_4(void)
 {
 	lv_obj_t *meter = lv_meter_create(lv_scr_act());
@@ -535,6 +778,15 @@ void lv_example_label_3(void)
 	lv_obj_align(cz_label, LV_ALIGN_BOTTOM_LEFT, 5, -5);
 }
 
+
+void lv_example_label_4(void)
+{
+    lv_obj_t *label = lv_label_create(lv_scr_act());
+    lv_label_set_text(label, "1星期一");
+    lv_obj_set_style_text_color(label, lv_color_hex(0x0), 0);
+    lv_obj_set_style_text_font(label, &Lamp_font18, 0);
+
+}
 
 
 /*animimg*/
@@ -1095,3 +1347,113 @@ void anim_sun_test1(void)
     lv_anim_set_values(&anim_sun, 40, 280);
     lv_anim_start(&anim_sun);
 }
+
+static lv_style_t bg_style_round;
+static lv_style_t con_style_on;
+static lv_style_t con_style_off;
+void lamp_pose_record_day_test(void)
+{
+    lv_obj_t *bg = lv_obj_create(lv_scr_act());
+	lv_obj_set_size(bg, 400, 300);
+	lv_obj_center(bg);
+
+	/*设置背景样式*/
+	lv_style_init(&bg_style_round);
+	lv_style_set_bg_opa(&bg_style_round, LV_OPA_100);/*设置背景透明度*/
+	lv_style_set_radius(&bg_style_round, 40);/*设置圆角*/
+	lv_style_set_bg_color(&bg_style_round, lv_color_black());/*设置背景颜色,lv_color_hex()RGB888*/
+	lv_style_set_pad_top(&bg_style_round, 0);
+	lv_style_set_pad_bottom(&bg_style_round, 0);
+	lv_style_set_pad_left(&bg_style_round, 0);
+	lv_style_set_pad_right(&bg_style_round, 0);
+	lv_style_set_border_width(&bg_style_round, 0);
+
+	/*设置背景样式*/
+	lv_style_init(&con_style_on);
+	lv_style_set_bg_opa(&con_style_on, LV_OPA_100);/*设置背景透明度*/
+	lv_style_set_radius(&con_style_on, 100);/*设置圆角*/
+	lv_style_set_bg_color(&con_style_on, lv_color_hex(0xffe58f));/*设置背景颜色,lv_color_hex()RGB888*/
+	lv_style_set_bg_grad_color(&con_style_on, lv_color_hex(0xffd666));
+	lv_style_set_bg_grad_dir(&con_style_on, LV_GRAD_DIR_HOR);
+	lv_style_set_pad_top(&con_style_on, 0);
+	lv_style_set_pad_bottom(&con_style_on, 0);
+	lv_style_set_pad_left(&con_style_on, 0);
+	lv_style_set_pad_right(&con_style_on, 0);
+	lv_style_set_border_width(&con_style_on, 0);
+
+	lv_style_init(&con_style_off);
+	lv_style_set_bg_opa(&con_style_off, LV_OPA_100);/*设置背景透明度*/
+	lv_style_set_radius(&con_style_off, 40);/*设置圆角*/
+	lv_style_set_bg_color(&con_style_off, lv_color_hex(0x434343));/*设置背景颜色,lv_color_hex()RGB888*/
+	lv_style_set_bg_grad_color(&con_style_off, lv_color_hex(0x4e4e4e));
+	lv_style_set_pad_top(&con_style_off, 0);
+	lv_style_set_pad_bottom(&con_style_off, 0);
+	lv_style_set_pad_left(&con_style_off, 0);
+	lv_style_set_pad_right(&con_style_off, 0);
+	lv_style_set_border_width(&con_style_off, 0);
+
+
+
+	/*给背景添加样式*/
+	lv_obj_add_style(bg, &bg_style_round, LV_PART_MAIN);
+
+    /*下面"日报"标签*/
+    lv_label_t *label_bottom = lv_label_create(bg);
+    lv_label_set_text(label_bottom, "123日报");
+    lv_obj_set_style_text_color(label_bottom, lv_color_hex(0xffffff), LV_PART_MAIN);
+    lv_obj_set_style_text_font(label_bottom, &Lamp_font20, LV_PART_MAIN);
+    lv_obj_align(label_bottom, LV_ALIGN_TOP_LEFT, 185, 254);
+
+    /*创建圆环*/
+
+    lv_obj_t *arc = lv_arc_create(bg);
+	lv_obj_set_size(arc, 160, 160);
+	lv_arc_set_angles(arc, 0, 360);
+	lv_arc_set_bg_angles(arc, 0, 360);
+	lv_obj_set_style_arc_width(arc, 17, LV_PART_INDICATOR);
+	lv_obj_set_style_arc_width(arc, 17, LV_PART_MAIN);
+	//lv_obj_set_style_arc_color(arc, lv_color_hex(0x69b1ff), LV_PART_INDICATOR);
+	lv_obj_set_style_arc_color(arc, lv_color_hex(0x69b1ff), LV_PART_MAIN);
+	lv_obj_remove_style(arc, NULL, LV_PART_KNOB);
+	lv_arc_set_mode(arc, LV_ARC_MODE_NORMAL);
+	lv_arc_set_rotation(arc, 0);
+	lv_arc_set_value(arc, 0);
+	lv_obj_clear_flag(arc, LV_OBJ_FLAG_CLICKABLE);
+	lv_obj_align(arc, LV_ALIGN_TOP_LEFT, 47, 83);
+
+    /*创建3个圆圈*/
+    lv_obj_t *circle_left = lv_obj_create(bg);
+    lv_obj_set_size(circle_left, 10, 10);
+    lv_obj_add_style(circle_left, &con_style_on, LV_PART_MAIN);
+    lv_obj_align(circle_left, LV_ALIGN_TOP_LEFT, 300, 274);
+
+    lv_obj_t *circle_mid = lv_obj_create(bg);
+    lv_obj_set_size(circle_mid, 10, 10);
+    lv_obj_add_style(circle_mid, &con_style_off, LV_PART_MAIN);
+    lv_obj_align_to(circle_mid, circle_left, LV_ALIGN_OUT_RIGHT_MID, 8, 0);
+
+    lv_obj_t *circle_right = lv_obj_create(bg);
+    lv_obj_set_size(circle_right, 10, 10);
+    lv_obj_add_style(circle_right, &con_style_off, LV_PART_MAIN);
+    lv_obj_align_to(circle_right, circle_mid, LV_ALIGN_OUT_RIGHT_MID, 8, 0);
+
+    lv_obj_add_flag(bg, LV_OBJ_FLAG_HIDDEN);/*隐藏*/
+    lv_obj_clear_flag(bg, LV_OBJ_FLAG_HIDDEN);
+}
+
+
+void lv_example_align_test(void)
+{
+
+    lv_obj_t *con = lv_obj_create(lv_scr_act());
+    lv_obj_set_size(con, 20, 100);
+    lv_obj_set_style_bg_color(con, lv_color_hex(0x69b1ff), LV_PART_MAIN);
+
+
+    //lv_obj_align(con, LV_ALIGN_OUT_LEFT_BOTTOM, 0, 0);
+    lv_obj_align(con, LV_ALIGN_BOTTOM_LEFT, 0, -10);
+}
+
+
+
+

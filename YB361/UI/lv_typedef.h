@@ -94,10 +94,36 @@ typedef struct _dev_param
 
 }Dev_param_t;
 
+
+
+typedef struct{
+    uint32_t checksum;	/*校验和*/
+	uint8_t id;			/*闹钟id;最多255个闹钟*/
+	uint8_t hour;		/*时间:小时部分,24小时制*/
+	uint8_t minute;		/*时间:分钟部分,*/
+	uint8_t wake_open;	/*晨光唤醒,0-关闭,1-开启*/
+	uint8_t repeat;		/*重复类型:0-不重复,1-每天,2-周一到周五*/
+	uint8_t music;		/*音乐名:0-鸟鸣声,1-铃声1,2-铃声-2,3-铃声3*/
+	uint16_t timestamp;	/*时间戳*/
+	uint8_t alarm_open;	/*是否开启闹钟*/
+	uint8_t temp[3];
+}Timer_info_t;
+
+typedef struct _timer_s_list{
+    Timer_info_t timer_info;
+    struct _timer_s_list *next;
+}Timer_List_s_t;
+
+
+
+
+
 extern Dev_param_t gdev_param;
 
 void param_init(void);
 
 uint32_t xTaskGetTickCount(void);
 void add_some_data(void);
+
+void Lamp_Timer_Test(void);
 #endif

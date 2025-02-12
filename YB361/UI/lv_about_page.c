@@ -29,7 +29,6 @@ void lv_board_about(void)
 	g_pt_lv_about->bg_about = lv_obj_create(lv_scr_act());/*创建背景*/
 
 	//lv_disp_set_rotation(NULL, LV_DISP_ROT_90);
-SetDispRotain(1);
 	//lv_obj_clear_flag(g_pt_lv_about->bg_about, LV_OBJ_FLAG_SCROLLABLE);
 	lv_obj_set_size(g_pt_lv_about->bg_about, LV_HOR_RES, LV_VER_RES);/*设置大小*/
 	//lv_obj_set_size(g_pt_lv_about->bg_about, LV_VER_RES, LV_HOR_RES);/*设置大小*/
@@ -163,7 +162,7 @@ static void event_handler_back_to_home(lv_event_t *e)
 
 		vPortFree(g_pt_lv_about);
         //lv_disp_set_rotation(NULL, LV_DISP_ROT_NONE);
-        SetDispRotain(0);
+
 		lv_main_page_demo_home(100);
 	}
 }
